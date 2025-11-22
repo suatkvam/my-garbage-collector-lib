@@ -60,6 +60,9 @@ void						*gc_realloc(t_gc_context *contex, void *ptr);
 char						*gc_strdup(t_gc_context *contex, const char *s);
 char						*gc_strndup(t_gc_context *contex, const char *s,
 								size_t n);
+char						*gc_strjoin(t_gc_context *contex, const char *s1,
+								const char *s2);
+
 
 /*scope managment*/
 void						gc_scope_push(t_gc_context *contex, t_gc_mode mode);
