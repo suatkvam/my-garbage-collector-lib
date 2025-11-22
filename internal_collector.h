@@ -73,7 +73,9 @@ void						gc_bzero(void *s, size_t n);
 
 t_gc_allocation				*gc_alloc_crate(void *ptr, size_t size,
 								size_t level);
+t_gc_allocation	*gc_find_allocation(t_gc_context *contex, void *ptr);
 void						gc_alloc_destroy(t_gc_allocation *allo);
+void						gc_free(t_gc_context *contex, void *ptr);
 void						gc_alloc_add_to_list(t_gc_context *contex,
 								t_gc_allocation *allo);
 void						gc_alloc_remove_from_list(t_gc_context *contex,
@@ -82,6 +84,7 @@ void						gc_alloc_add_to_scope(t_gc_scope *scope,
 								t_gc_allocation *alloc);
 
 t_gc_scope					*gc_scope_create(size_t level);
+int							gc_scope_push(t_gc_context *contex);
 void						gc_scope_destroy(t_gc_scope *scope);
 void						gc_mark_pahese(t_gc_context *contex);
 size_t						gc_sweep_phase(t_gc_context *contex);

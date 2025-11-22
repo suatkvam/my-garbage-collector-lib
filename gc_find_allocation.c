@@ -1,0 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   gc_find_allocation.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: akivam <akivam@student.istanbul.com.tr>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/22 14:30:00 by akivam              #+#    #+#             */
+/*   Updated: 2025/11/22 14:30:03 by akivam             ###   ########.tr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "internal_collector.h"
+/*find aloocation metadata by user pointer*/
+t_gc_allocation	*gc_find_allocation(t_gc_context *contex, void *ptr)
+{
+	t_gc_allocation *current;
+
+	current = contex->all_allocations;
+	while (current)
+	{
+		if(current->ptr == ptr)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
+}
