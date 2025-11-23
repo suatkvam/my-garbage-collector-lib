@@ -34,7 +34,7 @@ static void *gc_realloc_null(t_gc_context *context, size_t size)
 static void *gc_realloc_zero(t_gc_context *context, void *ptr)
 {
 	gc_free(context, ptr);
-	free(NULL);
+	return (NULL);
 }
 
 /*
@@ -53,9 +53,9 @@ void *gc_realloc(t_gc_context *context, void *ptr, size_t size)
 	if(!context)
 		return (NULL);
 	if(!ptr)
-		return (gc_realloc_null);
+		return (gc_realloc_null(context, size));
 	if(size == 0)
-		return(gc_realloc_zero);
+		return (gc_realloc_zero(context, ptr));
 	old_alloc = gc_find_allocation(context, ptr);
 	if(!old_alloc)
 		return (NULL);

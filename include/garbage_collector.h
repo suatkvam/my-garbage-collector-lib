@@ -55,10 +55,9 @@ void						gc_destroy(t_gc_context *context);
 /*memory allocation*/
 void						*gc_malloc(t_gc_context *contex, size_t size);
 void						*gc_calloc(t_gc_context *contex, size_t nmumb,
-								size_t size);
-void						*gc_realloc(t_gc_context *contex, void *ptr);
-
-/*string utilities*/
+							size_t size);
+void						*gc_realloc(t_gc_context *contex, void *ptr,
+							size_t size);/*string utilities*/
 char						*gc_strdup(t_gc_context *contex, const char *s);
 char						*gc_strndup(t_gc_context *contex, const char *s,
 								size_t n);
@@ -67,7 +66,7 @@ char						*gc_strjoin(t_gc_context *contex, const char *s1,
 
 
 /*scope managment*/
-void						gc_scope_push(t_gc_context *contex, t_gc_mode mode);
+int							gc_scope_push(t_gc_context *contex);
 void						gc_scope_pop(t_gc_context *contex);
 void						gc_scope_pop_all(t_gc_context *contex);
 
@@ -77,8 +76,8 @@ t_gc_mode					gc_get_mode(t_gc_context *contex);
 void						gc_set_debug(t_gc_context *contex, int enable);
 
 /*statistic & debug*/
-void						gc_set_stats(t_gc_context *contex,
-								t_gc_stats *stats);
+void						gc_get_stats(t_gc_context *contex,
+							t_gc_stats *stats);
 void						gc_print_stats(t_gc_context *contex);
 void						gc_collect(t_gc_context *contex);
 
