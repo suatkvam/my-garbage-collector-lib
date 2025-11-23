@@ -1,0 +1,71 @@
+# Garbage Collector Examples
+
+This directory contains example programs demonstrating how to use the garbage collector library.
+
+## Building
+
+First, build the library:
+```bash
+cd ..
+make
+```
+
+Then compile any example:
+```bash
+cc -Wall -Wextra -Werror examples/basic_example.c garbage_collecter.a -o basic_example
+```
+
+## Examples
+
+### 1. basic_example.c
+Basic usage: `gc_malloc`, `gc_calloc`, `gc_strdup` functions.
+```bash
+cc examples/basic_example.c garbage_collecter.a -o basic_example
+./basic_example
+```
+
+### 2. scope_example.c
+Scope management: automatic memory cleanup with `gc_scope_push` and `gc_scope_pop`.
+```bash
+cc examples/scope_example.c garbage_collecter.a -o scope_example
+./scope_example
+```
+
+### 3. modes_example.c
+GC modes: usage of MANUAL, AUTO and HYBRID modes.
+```bash
+cc examples/modes_example.c garbage_collecter.a -o modes_example
+./modes_example
+```
+
+### 4. string_utils_example.c
+String functions: `gc_strdup`, `gc_strndup`, `gc_strjoin`.
+```bash
+cc examples/string_utils_example.c garbage_collecter.a -o string_utils_example
+./string_utils_example
+```
+
+### 5. debug_example.c
+Debug mode: statistics and memory tracking.
+```bash
+cc examples/debug_example.c garbage_collecter.a -o debug_example
+./debug_example
+```
+
+## Quick Test
+
+To run all examples in sequence:
+```bash
+for example in basic scope modes string_utils debug; do
+    cc examples/${example}_example.c garbage_collecter.a -o ${example}_example
+    ./${example}_example
+    echo ""
+done
+```
+
+## Cleanup
+
+To remove compiled files:
+```bash
+rm -f *_example
+```

@@ -13,7 +13,7 @@
 #ifndef INTERNAL_COLLECTOR_H
 # define INTERNAL_COLLECTOR_H
 
-# include "garbage_collector.h"
+# include "../garbage_collector.h"
 
 /*allocation metadata*/
 typedef struct s_gc_allocation
