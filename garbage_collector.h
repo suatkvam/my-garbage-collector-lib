@@ -42,8 +42,10 @@ typedef struct s_gc_stats
 	size_t					total_allocated;
 	size_t					total_freed;
 	size_t					current_usage;
+	size_t					peak_usage;
 	size_t					allocation_count;
 	size_t					scope_depth;
+	size_t					free_count;
 }							t_gc_stats;
 
 /*initilazition*/
