@@ -84,6 +84,8 @@ void						gc_alloc_add_to_scope(t_gc_scope *scope,
 								t_gc_allocation *alloc);
 
 t_gc_scope					*gc_scope_create(size_t level);
+void 						gc_mark(t_gc_context *contex);
+void 						gc_sweep(t_gc_context *contex);
 int							gc_scope_push(t_gc_context *contex);
 void						gc_scope_destroy(t_gc_scope *scope);
 void						gc_mark_pahese(t_gc_context *contex);
