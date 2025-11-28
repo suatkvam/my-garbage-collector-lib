@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   gc_set_mode.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akivam <akivam@student.istanbul.com.tr>    +#+  +:+       +#+        */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/23 16:00:55 by akivam              #+#    #+#           */
-/*   Updated: 2025/11/23 16:13:54 by sora             ###   ########.tr       */
+/*   Created: 2025/11/28 20:00:12 by akivam            #+#    #+#             */
+/*   Updated: 2025/11/28 20:00:12 by akivam           ###   ########.tr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "internal_collector.h"
 

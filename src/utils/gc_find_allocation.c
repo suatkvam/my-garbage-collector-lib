@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gc_find_allocation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akivam <akivam@student.istanbul.com.tr>    +#+  +:+       +#+        */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/22 14:30:00 by akivam              #+#    #+#             */
-/*   Updated: 2025/11/22 14:30:03 by akivam             ###   ########.tr       */
+/*   Created: 2025/11/28 20:06:26 by akivam            #+#    #+#             */
+/*   Updated: 2025/11/28 20:06:26 by akivam           ###   ########.tr       */
 /*                                                                            */
 /* ************************************************************************** */
 

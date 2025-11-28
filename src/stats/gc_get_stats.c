@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   gc_get_stats.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sora <username@student.istanbul.com.tr>    +#+  +:+       +#+        */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/23 16:46:05 by sora              #+#    #+#             */
-/*   Updated: 2025/11/23 16:46:09 by sora             ###   ########.tr       */
+/*   Created: 2025/11/28 20:04:56 by akivam            #+#    #+#             */
+/*   Updated: 2025/11/28 20:04:56 by akivam           ###   ########.tr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "internal_collector.h"
 

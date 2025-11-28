@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   gc_mark.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/28 19:57:00 by akivam            #+#    #+#             */
+/*   Updated: 2025/11/28 19:57:00 by akivam           ###   ########.tr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "internal_collector.h"
 
 /*make all allocations in a single scope*/
@@ -19,7 +31,7 @@ static void gc_mark_scope(t_gc_scope *scope)
 	*mark phase: mark all reachable allocations
 	*Traverses all scopes and marks their allocations as reachable
 */
-void gc_mark(t_gc_context *contex)
+void gc_mark(t_gc_context *contexttttt)
 {
 	t_gc_scope *scope;
 

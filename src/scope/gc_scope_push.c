@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gc_scope_push.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akivam <akivam@student.istanbul.com.tr>    +#+  +:+       +#+        */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/22 14:51:19 by akivam              #+#    #+#             */
-/*   Updated: 2025/11/22 14:51:23 by akivam             ###   ########.tr       */
+/*   Created: 2025/11/28 20:04:21 by akivam            #+#    #+#             */
+/*   Updated: 2025/11/28 20:04:21 by akivam           ###   ########.tr       */
 /*                                                                            */
 /* ************************************************************************** */
 
