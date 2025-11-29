@@ -1,33 +1,42 @@
-# Compiled files
+# Compiled Object files
 *.o
-*.a
-*.so
-*.dylib
-
-# Object directories
+*.obj
 obj/
 obj*/
 
-# Executable examples
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries (keep garbage_collecter.a for distribution)
+# *.a  # Don't ignore .a, we want to distribute it
+
+# Executables
 examples/*_example
 examples/benchmark_example
 examples/test_*
+*.exe
+*.out
+*.app
 
-# IDE/Editor files
+# Build artifacts
+*.d
+.depend
+*.log
+
+# IDE/Editor
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
 
 # OS files
-.DS_Store
 Thumbs.db
+*.tmp
 
-# Test artifacts
+# Test output
 test_output/
-*.log
-
-# Build artifacts
-*.d
-.depend
+*.test

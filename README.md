@@ -404,9 +404,41 @@ Contributions are welcome! Please:
 4. Add tests for new features
 5. Submit a pull request
 
-## 📄 License
+## 📜 License
 
-This project is licensed under the MIT License.
+This project is **dual-licensed**:
+
+### 🆓 For Open Source Projects
+Licensed under **GNU GPL v3.0** - Perfect for:
+- Personal projects
+- Academic research
+- Open source software
+- Learning and education
+
+See [LICENSE-GPL-3.0](LICENSE-GPL-3.0) for full terms.
+
+### 💼 For Commercial Use
+Need to use in a **closed-source/commercial** product?
+
+**Commercial licenses available:**
+- ✅ No GPL restrictions
+- ✅ Use in proprietary software
+- ✅ Priority support
+- ✅ Custom modifications
+- ✅ Perpetual license
+
+**Contact:** your-email@example.com
+
+---
+
+**Note:** This library represents **1 week of intensive development**. 
+Commercial licensing helps support continued development and maintenance.
+
+### Why Dual License?
+- 🎓 Students and hobbyists can use it freely
+- 🏢 Companies respect the work and pay for commercial use
+- 💪 Sustainable open-source development
+- 🚀 Everyone benefits!
 
 ## 👤 Author
 
