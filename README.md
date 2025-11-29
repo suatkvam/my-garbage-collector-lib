@@ -1,5 +1,9 @@
 # My Garbage Collector Library
 
+[![Build Status](https://github.com/suatkvam/my-garbage-collector-lib/workflows/Build%20and%20Release/badge.svg)](https://github.com/suatkvam/my-garbage-collector-lib/actions)
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey.svg)](https://github.com/suatkvam/my-garbage-collector-lib)
+
 A high-performance garbage collector library for C programs, providing automatic memory management through scope-based tracking and mark-and-sweep collection.
 
 ## 🎯 Features
@@ -7,15 +11,15 @@ A high-performance garbage collector library for C programs, providing automatic
 - **Scope-Based Management**: Deterministic memory cleanup with automatic scope tracking
 - **Mark-and-Sweep Collection**: Comprehensive garbage collection for unreachable objects
 - **Multiple GC Modes**: Manual, Auto, and Hybrid collection modes
-- **High Performance**: Faster than standard malloc in many scenarios
+- **High Performance**: 23% faster than standard malloc in benchmarks
 - **Rich String Utilities**: Built-in string manipulation with GC tracking
 - **Easy Integration**: Simple API with minimal overhead
 - **Debug Support**: Comprehensive statistics and debugging tools
-- **Thread-Ready**: Architecture designed for future thread-safety
+- **Legacy Code Wrapper**: Seamless integration with existing codebases
 
-## 📊 Performance
+## �� Performance
 
-Benchmarked on WSL2 / Ubuntu:
+Benchmarked on WSL2 / Ubuntu 22.04:
 
 | Operation | Scale | Time | Per Operation |
 |-----------|-------|------|---------------|
@@ -79,7 +83,7 @@ int main(void)
 cc your_program.c garbage_collecter.a -o your_program
 ```
 
-## 📚 Core API
+## �� Core API
 
 ### Context Management
 
@@ -102,8 +106,11 @@ Reallocates memory block to new size.
 
 ### String Utilities
 ```c
+// String duplication with GC tracking
 char *gc_strdup(t_gc_context *ctx, const char *s);
 char *gc_strndup(t_gc_context *ctx, const char *s, size_t n);
+
+// String manipulation
 char *gc_strjoin(t_gc_context *ctx, const char *s1, const char *s2);
 char *gc_substr(t_gc_context *ctx, const char *s, size_t start, size_t len);
 char *gc_strtrim(t_gc_context *ctx, const char *s1, const char *set);
@@ -348,6 +355,53 @@ void bulk_process(t_gc_context *gc)
 }
 ```
 
+## 📜 License
+
+This project is licensed under the **Mozilla Public License 2.0** (MPL-2.0).
+
+### 🤔 What does this mean?
+
+**You CAN:**
+- ✅ Use this library in commercial projects
+- ✅ Use it in closed-source software
+- ✅ Modify the code
+- ✅ Distribute it
+- ✅ Combine with other licenses
+
+**You MUST:**
+- 📄 Keep the license notice
+- 📄 Share modifications to **MPL-licensed files**
+- 📄 Disclose source of modified MPL files
+
+**You DON'T have to:**
+- ❌ Open source your entire project
+- ❌ Share your proprietary code
+- ❌ Use the same license for your code
+
+### 💼 Commercial Use Example
+```
+Your Game/Software (Proprietary)
+├── game_engine.c         ← Your code (closed source ✅)
+├── graphics.c            ← Your code (closed source ✅)
+└── lib/
+    ├── gc_malloc.c       ← MPL file (if modified, share ✅)
+    └── gc_collect.c      ← MPL file (if modified, share ✅)
+```
+
+**Result:** Your game stays closed-source, but if you improve `gc_malloc.c`, 
+you share that improvement back to the community. Fair deal! 🤝
+
+### 🎯 Why MPL 2.0?
+
+This library represents **1 week of intensive development**. MPL 2.0 ensures:
+- 🔒 My work is protected
+- 🤝 Improvements come back to me
+- 💼 Companies can use it commercially
+- 🆓 Open source projects benefit
+- 🛡️ Patent protection included
+
+See [LICENSE](LICENSE) for full terms.
+
 ## 🐛 Troubleshooting
 
 ### Memory Not Being Freed
@@ -363,12 +417,6 @@ gc_collect(gc);  // Won't free (still in scope)
 // Solution: Use scope pop
 gc_scope_pop(gc);  // Frees memory
 ```
-
-### Scope Depth Issues
-
-**Problem:** `Scope depth: 128735969909488` (garbage value)
-
-**Solution:** This is fixed in latest version. Update your library.
 
 ### Performance Issues
 
@@ -388,11 +436,11 @@ gc->collect_interval = 10000;              // Every 10K allocs
 - [x] String utilities
 - [x] Statistics and debugging
 - [x] Performance benchmarking
-- [ ] Thread-safe version (in progress)
+- [x] CI/CD with GitHub Actions
+- [ ] Thread-safe version
 - [ ] Generational collection
 - [ ] Compacting collector
 - [ ] Finalizer support
-- [ ] Concurrent collection
 
 ## 🤝 Contributing
 
@@ -404,42 +452,6 @@ Contributions are welcome! Please:
 4. Add tests for new features
 5. Submit a pull request
 
-## 📜 License
-
-This project is **dual-licensed**:
-
-### 🆓 For Open Source Projects
-Licensed under **GNU GPL v3.0** - Perfect for:
-- Personal projects
-- Academic research
-- Open source software
-- Learning and education
-
-See [LICENSE-GPL-3.0](LICENSE-GPL-3.0) for full terms.
-
-### 💼 For Commercial Use
-Need to use in a **closed-source/commercial** product?
-
-**Commercial licenses available:**
-- ✅ No GPL restrictions
-- ✅ Use in proprietary software
-- ✅ Priority support
-- ✅ Custom modifications
-- ✅ Perpetual license
-
-**Contact:** your-email@example.com
-
----
-
-**Note:** This library represents **1 week of intensive development**. 
-Commercial licensing helps support continued development and maintenance.
-
-### Why Dual License?
-- 🎓 Students and hobbyists can use it freely
-- 🏢 Companies respect the work and pay for commercial use
-- 💪 Sustainable open-source development
-- 🚀 Everyone benefits!
-
 ## 👤 Author
 
 **suatkvam**
@@ -447,7 +459,7 @@ Commercial licensing helps support continued development and maintenance.
 
 ## 🙏 Acknowledgments
 
-Thanks to all contributors and users of this library!
+Thanks to all contributors and the C community!
 
 ## 📞 Support
 
@@ -457,3 +469,5 @@ Thanks to all contributors and users of this library!
 ---
 
 **Made with ❤️ for 42 and the C community**
+
+*One week of intensive development, thousands of lines of code, infinite possibilities.*
