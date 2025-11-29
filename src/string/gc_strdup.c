@@ -12,17 +12,6 @@
 
 #include "internal_collector.h"
 
-/* calculate string length*/
-static size_t gc_strlen(const char *s)
-{
-	int i;
-	
-	i = 0;
-	while(s[i])
-		i++;
-	return i;
-}
-
 /*
 	*duplicate string with gc tracking
 	*s: source string to duplicate

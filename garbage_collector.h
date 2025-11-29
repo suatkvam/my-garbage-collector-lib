@@ -65,6 +65,20 @@ char						*gc_strndup(t_gc_context *contex, const char *s,
 								size_t n);
 char						*gc_strjoin(t_gc_context *contex, const char *s1,
 								const char *s2);
+size_t						gc_strlen(const char *s);
+int							gc_strcmp(const char *s1, const char *s2);
+int							gc_strncmp(const char *s1, const char *s2, size_t n);
+char						*gc_strchr(const char *s, int c);
+char						*gc_strrchr(const char *s, int c);
+
+/*string conversion functions*/
+int							gc_atoi(const char *str);
+char						*gc_itoa(t_gc_context *contex, int n);
+char						*gc_uitoa(t_gc_context *contex, size_t n);
+
+/*string manipulation with gc tracking*/
+char						*gc_substr(t_gc_context *contex, const char *s, size_t start, size_t len);
+char						*gc_strtrim(t_gc_context *contex, const char *s1, const char *set);
 
 
 /*scope managment*/
@@ -83,4 +97,7 @@ void						gc_get_stats(t_gc_context *contex,
 void						gc_print_stats(t_gc_context *contex);
 void						gc_collect(t_gc_context *contex);
 
+/*wrapper context management (for legacy code integration)*/
+void						gc_wrapper_push_context(t_gc_context *contex);
+void						gc_wrapper_pop_context(void);
 #endif

@@ -12,17 +12,6 @@
 
 #include "internal_collector.h"
 
-/* calculate string length*/
-static size_t gc_strlen(const char *s)
-{
-	int i;
-	
-	i = 0;
-	while(s[i])
-		i++;
-	return i;
-}
-
 /*join two strings with gc tracking*/
 char *gc_strjoin(t_gc_context *contex, const char *s1, const char *s2)
 {

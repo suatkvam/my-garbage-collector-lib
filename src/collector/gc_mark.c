@@ -31,7 +31,7 @@ static void gc_mark_scope(t_gc_scope *scope)
 	*mark phase: mark all reachable allocations
 	*Traverses all scopes and marks their allocations as reachable
 */
-void gc_mark(t_gc_context *contexttttt)
+void gc_mark(t_gc_context *contex)
 {
 	t_gc_scope *scope;
 

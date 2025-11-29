@@ -23,6 +23,11 @@ static void	gc_set_defaults(t_gc_context *ctx)
 	ctx->last_collect_count = 0;
 }
 
+/*
+**	create and initialize garbage collector context
+**	automatically creates root scope for non-scoped allocations
+**	Return: new context or NULL on failure
+*/
 t_gc_context	*gc_create(void)
 {
 	t_gc_context	*ctx;
@@ -32,5 +37,10 @@ t_gc_context	*gc_create(void)
 		return (NULL);
 	gc_memset(ctx, 0, sizeof(t_gc_context));
 	gc_set_defaults(ctx);
+	if (!gc_scope_push(ctx))
+	{
+		free(ctx);
+		return (NULL);
+	}
 	return (ctx);
 }

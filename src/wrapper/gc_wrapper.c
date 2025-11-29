@@ -10,61 +10,90 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "garbage_collector.h"
-#include <string.h>
+#include "../garbage_collector.h"
 
-/**
- * Real function declarations
- * These will be linked to the actual libc implementations
- */
+#define MAX_GC_CONTEXTS 16
+
+typedef struct s_gc_stack
+{
+	t_gc_context	*contexts[MAX_GC_CONTEXTS];
+	int				top;
+}	t_gc_stack;
+
+static t_gc_stack	g_ctx_stack = {.top = -1};
+
 void	*__real_malloc(size_t size);
 void	*__real_calloc(size_t nmemb, size_t size);
 void	*__real_realloc(void *ptr, size_t size);
 void	__real_free(void *ptr);
 
-/**
- * __wrap_malloc - Wrapper for malloc that uses GC
- * @size: Size to allocate
- * 
- * This function is called instead of malloc when using --wrap=malloc
- * Return: Allocated memory pointer
- */
+/*
+**	gc_wrapper_push_context - activate GC context for malloc/free
+**	@ctx: context to use for subsequent allocations
+**
+**	Push context onto internal stack. All malloc calls will use this context.
+**	Supports nested contexts (max 16 levels).
+*/
+void	gc_wrapper_push_context(t_gc_context *ctx)
+{
+	if (!ctx || g_ctx_stack.top >= MAX_GC_CONTEXTS - 1)
+		return ;
+	g_ctx_stack.contexts[++g_ctx_stack.top] = ctx;
+}
+
+/*
+**	gc_wrapper_pop_context - deactivate current GC context
+**
+**	Pop context from stack. Falls back to previous context or real malloc.
+*/
+void	gc_wrapper_pop_context(void)
+{
+	if (g_ctx_stack.top >= 0)
+		g_ctx_stack.top--;
+}
+
+static t_gc_context	*gc_get_current(void)
+{
+	if (g_ctx_stack.top < 0)
+		return (NULL);
+	return (g_ctx_stack.contexts[g_ctx_stack.top]);
+}
+
 void	*__wrap_malloc(size_t size)
 {
-	return (__real_malloc(size));
+	t_gc_context	*ctx;
+
+	ctx = gc_get_current();
+	if (!ctx)
+		return (__real_malloc(size));
+	return (gc_malloc(ctx, size));
 }
 
-/**
- * __wrap_calloc - Wrapper for calloc that uses GC
- * @nmemb: Number of elements
- * @size: Size of each element
- * 
- * Return: Allocated and zeroed memory pointer
- */
 void	*__wrap_calloc(size_t nmemb, size_t size)
 {
-	return (__real_calloc(nmemb, size));
+	t_gc_context	*ctx;
+
+	ctx = gc_get_current();
+	if (!ctx)
+		return (__real_calloc(nmemb, size));
+	return (gc_calloc(ctx, nmemb, size));
 }
 
-/**
- * __wrap_realloc - Wrapper for realloc that uses GC
- * @ptr: Pointer to reallocate
- * @size: New size
- * 
- * Return: Reallocated memory pointer
- */
 void	*__wrap_realloc(void *ptr, size_t size)
 {
-	return (__real_realloc(ptr, size));
+	t_gc_context	*ctx;
+
+	ctx = gc_get_current();
+	if (!ctx)
+		return (__real_realloc(ptr, size));
+	return (gc_realloc(ctx, ptr, size));
 }
 
-/**
- * __wrap_free - Wrapper for free that uses GC
- * @ptr: Pointer to free
- * 
- * In GC mode, this is often a no-op since GC handles cleanup
- */
 void	__wrap_free(void *ptr)
 {
-	__real_free(ptr);
+	t_gc_context	*ctx;
+
+	ctx = gc_get_current();
+	if (!ctx)
+		__real_free(ptr);
 }

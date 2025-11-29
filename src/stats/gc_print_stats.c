@@ -11,51 +11,72 @@
 /* ************************************************************************** */
 
 #include "internal_collector.h"
-#include "unistd.h"
+#include <unistd.h>
 
-/*print single stat line (helper to avoid printf in multiple places)*/
-static void gc_print_line(const char *label,size_t value)
+static void	gc_write_str(const char *str)
 {
-	size_t	i;
-	size_t	temp;
-	char	buffer[32];
-	int		len;
+	int	i;
 
 	i = 0;
-	while(label[i])
-		write(1,&label[i++],1);
-	write(1,": ",2);
+	while (str[i])
+		i++;
+	write(1, str, i);
+}
+
+/*convert size_t to string using stack buffer (no allocation)*/
+static void	gc_write_number(size_t value)
+{
+	char	buffer[32];
+	int		len;
+	size_t	temp;
+
 	len = 0;
 	temp = value;
-	if(temp == 0)
+	if (temp == 0)
 		buffer[len++] = '0';
-	while (temp > 0)
+	while (temp > 0 && len < 31)
 	{
 		buffer[len++] = (temp % 10) + '0';
 		temp /= 10;
 	}
-	while(--len >= 0)
-		write(1,&buffer[len],1);	
-	write(1,"bytes\n", 7);
+	while (--len >= 0)
+		write(1, &buffer[len], 1);
+}
+
+static void	gc_print_line(const char *label, size_t value)
+{
+	gc_write_str("  ");
+	gc_write_str(label);
+	gc_write_str(": ");
+	gc_write_number(value);
+	gc_write_str(" bytes\n");
+}
+
+static void	gc_print_count(const char *label, size_t value)
+{
+	gc_write_str("  ");
+	gc_write_str(label);
+	gc_write_str(": ");
+	gc_write_number(value);
+	gc_write_str("\n");
 }
 
 /*
-	*print gc stat.st.cs to stdout
-	*shows allocation/free counts and memory usage
+**	print gc statistics to stdout
+**	shows allocation/free counts and memory usage
+**	NOTE: uses stack buffer to avoid recursive allocation
 */
-void gc_print_stats(t_gc_context *contex)
+void	gc_print_stats(t_gc_context *contex)
 {
-	if(!contex)
+	if (!contex)
 		return ;
-	write(1,"=== GC Statistics ===\n",22);
-	
+	gc_write_str("=== GC Statistics ===\n");
 	gc_print_line("Total Allocated", contex->total_allocated);
 	gc_print_line("Total Freed", contex->total_freed);
 	gc_print_line("Current Usage", contex->current_usage);
 	gc_print_line("Peak Usage", contex->peak_usage);
-	write(1, "Allocation Count: ", 18);
-	gc_print_line("", contex->allocation_count);
-	write(1, "Free Count: ", 12);
-	gc_print_line("", contex->free_count);
-	write(1, "=====================\n", 22);
+	gc_print_count("Allocation Count", contex->allocation_count);
+	gc_print_count("Free Count", contex->free_count);
+	gc_print_count("Scope Depth", contex->scope_depth);
+	gc_write_str("=====================\n");
 }
