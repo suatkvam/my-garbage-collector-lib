@@ -21,6 +21,7 @@ static void gc_copy_stats(t_gc_stats *stats, t_gc_context *contex)
 	stats->peak_usage = contex->peak_usage;
 	stats->allocation_count = contex->allocation_count;
 	stats->free_count = contex->free_count;
+	stats->scope_depth = contex->scope_depth;
 }
 
 /*
