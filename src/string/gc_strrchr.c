@@ -1,6 +1,6 @@
 #include "internal_collector.h"
 
-char	*ft_strrchr(const char *s, int c)
+char	*gc_strrchr(const char *s, int c)
 {
 	char	*str;
 	size_t	i;
