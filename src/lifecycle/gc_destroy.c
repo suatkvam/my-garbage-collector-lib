@@ -16,8 +16,8 @@
 /*free all remaining allocations in global list*/
 static void	gc_free_all_allocations(t_gc_context *contex)
 {
-	t_gc_allocation *current;
-	t_gc_allocation *next;
+	t_gc_allocation	*current;
+	t_gc_allocation	*next;
 
 	current = contex->all_allocations;
 	while (current)
@@ -32,8 +32,8 @@ static void	gc_free_all_allocations(t_gc_context *contex)
 /*free all remaining scopes in stack*/
 static void	gc_free_all_scopes(t_gc_context *contex)
 {
-	t_gc_scope *current;
-	t_gc_scope *next;
+	t_gc_scope	*current;
+	t_gc_scope	*next;
 
 	current = contex->current_scope;
 	while (current)

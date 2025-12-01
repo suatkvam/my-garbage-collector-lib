@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../garbage_collector.h"
+#include "../../garbage_collector.h"
 
 void	*__wrap_malloc(size_t size)
 {

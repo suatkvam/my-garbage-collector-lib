@@ -10,7 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../garbage_collector.h"
+#include "../../garbage_collector.h"
+
+typedef struct s_gc_stack
+{
+	t_gc_context	*contexts[MAX_GC_CONTEXTS];
+	int				top;
+}					t_gc_stack;
+
+static t_gc_stack	g_ctx_stack = {.top = -1};
 
 /*
 **	gc_wrapper_push_context - activate GC context for malloc/free
