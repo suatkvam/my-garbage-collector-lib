@@ -26,14 +26,22 @@
 
 # define MAX_GC_CONTEXTS 16
 
-void	*__real_malloc(size_t size);
-void	*__real_calloc(size_t nmemb, size_t size);
-void	*__real_realloc(void *ptr, size_t size);
-void	__real_free(void *ptr);
+void			*__real_malloc(size_t size);
+void			*__real_calloc(size_t nmemb, size_t size);
+void			*__real_realloc(void *ptr, size_t size);
+void			__real_free(void *ptr);
 
 /*opaque contex type*/
 
 typedef struct s_gc_context	t_gc_context;
+
+typedef struct s_gc_stack
+{
+	t_gc_context		*contexts[MAX_GC_CONTEXTS];
+	int					top;
+}						t_gc_stack;
+
+static t_gc_stack		g_ctx_stack = {.top = -1};
 
 /*garbage collector modes */
 typedef enum e_gc_mode
@@ -57,16 +65,16 @@ typedef struct s_gc_stats
 
 /*initilazition*/
 t_gc_context	*gc_create(void);
-void		gc_destroy(t_gc_context *context);
+void			gc_destroy(t_gc_context *context);
 /*memory allocation*/
-void		*gc_malloc(t_gc_context *contex, size_t size);
-void		*gc_calloc(t_gc_context *contex, size_t nmumb, size_t size);
-void		*gc_realloc(t_gc_context *contex, void *ptr, size_t size);
+void			*gc_malloc(t_gc_context *contex, size_t size);
+void			*gc_calloc(t_gc_context *contex, size_t nmumb, size_t size);
+void			*gc_realloc(t_gc_context *contex, void *ptr, size_t size);
 /*string utilities*/
 char			*gc_strdup(t_gc_context *contex, const char *s);
 char			*gc_strndup(t_gc_context *contex, const char *s, size_t n);
 char			*gc_strjoin(t_gc_context *contex, const char *s1,
-			const char *s2);
+					const char *s2);
 size_t			gc_strlen(const char *s);
 int				gc_strcmp(const char *s1, const char *s2);
 int				gc_strncmp(const char *s1, const char *s2, size_t n);
@@ -78,9 +86,9 @@ char			*gc_itoa(t_gc_context *contex, int n);
 char			*gc_uitoa(t_gc_context *contex, size_t n);
 /*string manipulation with gc tracking*/
 char			*gc_substr(t_gc_context *contex, const char *s, size_t start,
-			size_t len);
+					size_t len);
 char			*gc_strtrim(t_gc_context *contex, const char *s1,
-			const char *set);
+					const char *set);
 /*scope managment*/
 int				gc_scope_push(t_gc_context *contex);
 void			gc_scope_pop(t_gc_context *contex);
