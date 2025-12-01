@@ -15,7 +15,7 @@
 
 /*initilaize new scope node*/
 
-static void gc_init_scope(t_gc_scope *scope, size_t level)
+static void	gc_init_scope(t_gc_scope *scope, size_t level)
 {
 	scope->level = level;
 	scope->first = NULL;
@@ -25,18 +25,18 @@ static void gc_init_scope(t_gc_scope *scope, size_t level)
 }
 
 /*
-	*push new scope onto scope stack
-	*creates a new scope level foe deterministic memory managment
-	*returns 1 on success, 0 on failure
-*/
-int gc_scope_push(t_gc_context *context)
+ *push new scope onto scope stack
+ *creates a new scope level foe deterministic memory managment
+ *returns 1 on success, 0 on failure
+ */
+int	gc_scope_push(t_gc_context *context)
 {
 	t_gc_scope	*new_scope;
 
-	if(!context)
+	if (!context)
 		return (0);
 	new_scope = (t_gc_scope *)malloc(sizeof(t_gc_scope));
-	if(!new_scope)
+	if (!new_scope)
 		return (0);
 	gc_init_scope(new_scope, context->scope_depth);
 	new_scope->prev = context->current_scope;

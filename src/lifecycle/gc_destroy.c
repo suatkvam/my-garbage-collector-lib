@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 /*free all remaining allocations in global list*/
-static void gc_free_all_allocations(t_gc_context *contex)
+static void	gc_free_all_allocations(t_gc_context *contex)
 {
 	t_gc_allocation *current;
 	t_gc_allocation *next;
@@ -30,7 +30,7 @@ static void gc_free_all_allocations(t_gc_context *contex)
 }
 
 /*free all remaining scopes in stack*/
-static void gc_free_all_scopes(t_gc_context *contex)
+static void	gc_free_all_scopes(t_gc_context *contex)
 {
 	t_gc_scope *current;
 	t_gc_scope *next;
@@ -45,13 +45,13 @@ static void gc_free_all_scopes(t_gc_context *contex)
 }
 
 /*
-	*destroy gc context and free all resources
-	*cleans up all allocations and scopes
-*/
+ *destroy gc context and free all resources
+ *cleans up all allocations and scopes
+ */
 
-void gc_destroy(t_gc_context *contex)
+void	gc_destroy(t_gc_context *contex)
 {
-	if(!contex)
+	if (!contex)
 		return ;
 	gc_free_all_allocations(contex);
 	gc_free_all_scopes(contex);

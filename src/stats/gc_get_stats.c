@@ -13,7 +13,7 @@
 #include "internal_collector.h"
 
 /*copy statistics to output structure*/
-static void gc_copy_stats(t_gc_stats *stats, t_gc_context *contex)
+static void	gc_copy_stats(t_gc_stats *stats, t_gc_context *contex)
 {
 	stats->total_allocated = contex->total_allocated;
 	stats->total_freed = contex->total_freed;
@@ -25,13 +25,13 @@ static void gc_copy_stats(t_gc_stats *stats, t_gc_context *contex)
 }
 
 /*
-	*get current gc statistics
-	*stats: pointer to stats structure to fill
-*/
+ *get current gc statistics
+ *stats: pointer to stats structure to fill
+ */
 
-void gc_get_stats(t_gc_context *contex, t_gc_stats *stats)
+void	gc_get_stats(t_gc_context *contex, t_gc_stats *stats)
 {
-	if(!contex || !stats)
+	if (!contex || !stats)
 		return ;
 	gc_copy_stats(stats, contex);
 }

@@ -34,7 +34,8 @@ static t_gc_allocation	*gc_meta_create(void *ptr, size_t size, size_t level)
 }
 
 /* add metadata to global doubly-linked list*/
-static void	gc_meta_add_global(t_gc_context *contex, t_gc_allocation *meta_data)
+static void	gc_meta_add_global(t_gc_context *contex,
+		t_gc_allocation *meta_data)
 {
 	if (!contex->all_allocations)
 	{
@@ -78,15 +79,15 @@ static void	gc_update_and_collecte(t_gc_context *contex, size_t size)
 		return ;
 	if (contex->current_usage >= contex->collect_threshold)
 		gc_collect(contex);
-	else if (contex->allocation_count - contex->last_collect_count
-		>= contex->collect_interval)
+	else if (contex->allocation_count
+		- contex->last_collect_count >= contex->collect_interval)
 		gc_collect(contex);
 }
 
 /*
-	* main gc_malloc: allocates user memory and metadata, register both
-	* uses plain malloc for both allocations to void circular depency
-*/
+ * main gc_malloc: allocates user memory and metadata, register both
+ * uses plain malloc for both allocations to void circular depency
+ */
 
 void	*gc_malloc(t_gc_context *contex, size_t size)
 {

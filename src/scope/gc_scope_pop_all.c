@@ -11,15 +11,16 @@
 /* ************************************************************************** */
 
 #include "internal_collector.h"
+
 /*
-	*pop all scopes from stack
-	*cleans up all scope-based allocations at once
-	*used for cleanup or error recovery
-*/
-void gc_scope_pop_all(t_gc_context *contex)
+ *pop all scopes from stack
+ *cleans up all scope-based allocations at once
+ *used for cleanup or error recovery
+ */
+void	gc_scope_pop_all(t_gc_context *contex)
 {
-	if(!contex)
+	if (!contex)
 		return ;
-	while(contex->current_scope)
+	while (contex->current_scope)
 		gc_scope_pop(contex);
 }

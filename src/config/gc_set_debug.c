@@ -11,14 +11,15 @@
 /* ************************************************************************** */
 
 #include "internal_collector.h"
-/*
-	*enable or disable debug mode
-	*enabled: 1 to enable, 0 to disable
-*/
 
-void gc_set_debug(t_gc_context *contex, int enabled)
+/*
+ *enable or disable debug mode
+ *enabled: 1 to enable, 0 to disable
+ */
+
+void	gc_set_debug(t_gc_context *contex, int enabled)
 {
-	if(!contex)
+	if (!contex)
 		return ;
 	contex->debug_mode = enabled;
 }

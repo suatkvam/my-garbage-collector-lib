@@ -30,7 +30,7 @@ static void	gc_set_defaults(t_gc_context *ctx)
 */
 t_gc_context	*gc_create(void)
 {
-	t_gc_context	*ctx;
+	t_gc_context *ctx;
 
 	ctx = (t_gc_context *)malloc(sizeof(t_gc_context));
 	if (!ctx)

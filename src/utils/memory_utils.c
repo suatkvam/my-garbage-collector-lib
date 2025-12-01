@@ -32,7 +32,8 @@ void	*gc_memmove(void *dest, const void *src, size_t n)
 	size_t			i;
 	unsigned char	*tmp_src;
 	unsigned char	*tmp_dst;
-	if(!dest || !src)
+
+	if (!dest || !src)
 		return (NULL);
 	tmp_src = (unsigned char *)src;
 	tmp_dst = (unsigned char *)dest;
@@ -40,12 +41,9 @@ void	*gc_memmove(void *dest, const void *src, size_t n)
 		return (dest);
 	if (tmp_src > tmp_dst)
 	{
-		i = 0;
-		while (i < n)
-		{
+		i = -1;
+		while (++i < n)
 			tmp_dst[i] = tmp_src[i];
-			i++;
-		}
 	}
 	else
 	{
@@ -64,8 +62,8 @@ void	*gc_memcpy(void *dest, const void *src, size_t n)
 
 	if (!dest || !src)
 		return (NULL);
-	if(n == 0)
-		return(dest);
+	if (n == 0)
+		return (dest);
 	i = 0;
 	tmp_src = (unsigned char *)src;
 	tmp_dst = dest;

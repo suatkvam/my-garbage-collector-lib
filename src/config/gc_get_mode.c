@@ -13,13 +13,13 @@
 #include "internal_collector.h"
 
 /*
-	*get current garbage collection mode
-	*returns current mode or GC_MODE_MANUAL if contex is NULL
-*/
+ *get current garbage collection mode
+ *returns current mode or GC_MODE_MANUAL if contex is NULL
+ */
 
-t_gc_mode gc_get_mode(t_gc_context *contex)
+t_gc_mode	gc_get_mode(t_gc_context *contex)
 {
-	if(!contex)
+	if (!contex)
 		return (GC_MODE_MANUAL);
 	return (contex->mode);
 }

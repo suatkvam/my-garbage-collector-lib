@@ -13,11 +13,11 @@
 #include "internal_collector.h"
 
 /*make all allocations in a single scope*/
-static void gc_mark_scope(t_gc_scope *scope)
+static void	gc_mark_scope(t_gc_scope *scope)
 {
-	t_gc_allocation *current;
+	t_gc_allocation	*current;
 
-	if(!scope)
+	if (!scope)
 		return ;
 	current = scope->first;
 	while (current)
@@ -28,14 +28,14 @@ static void gc_mark_scope(t_gc_scope *scope)
 }
 
 /*
-	*mark phase: mark all reachable allocations
-	*Traverses all scopes and marks their allocations as reachable
-*/
-void gc_mark(t_gc_context *contex)
+ *mark phase: mark all reachable allocations
+ *Traverses all scopes and marks their allocations as reachable
+ */
+void	gc_mark(t_gc_context *contex)
 {
-	t_gc_scope *scope;
+	t_gc_scope	*scope;
 
-	if(!contex)
+	if (!contex)
 		return ;
 	scope = contex->current_scope;
 	while (scope)
