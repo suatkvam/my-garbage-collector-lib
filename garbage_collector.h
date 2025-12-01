@@ -35,14 +35,6 @@ void			__real_free(void *ptr);
 
 typedef struct s_gc_context	t_gc_context;
 
-typedef struct s_gc_stack
-{
-	t_gc_context		*contexts[MAX_GC_CONTEXTS];
-	int					top;
-}						t_gc_stack;
-
-static t_gc_stack		g_ctx_stack = {.top = -1};
-
 /*garbage collector modes */
 typedef enum e_gc_mode
 {
@@ -101,8 +93,6 @@ void			gc_set_debug(t_gc_context *contex, int enable);
 void			gc_get_stats(t_gc_context *contex, t_gc_stats *stats);
 void			gc_print_stats(t_gc_context *contex);
 void			gc_collect(t_gc_context *contex);
-/*wrapper context management (for legacy code integration)*/
-void			gc_wrapper_push_context(t_gc_context *contex);
-void			gc_wrapper_pop_context(void);
+/*wrapper helper function*/
 t_gc_context	*gc_get_current(void);
 #endif

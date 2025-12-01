@@ -50,3 +50,12 @@ void	__wrap_free(void *ptr)
 	if (!ctx)
 		__real_free(ptr);
 }
+
+/*
+**	gc_get_current - placeholder function
+**	Returns NULL (no global context support without global variables)
+*/
+t_gc_context	*gc_get_current(void)
+{
+	return (NULL);
+}
