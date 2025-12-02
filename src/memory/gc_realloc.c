@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   gc_realloc.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+
+	+:+     */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+
+	+#+        */
+/*                                                +#+#+#+#+#+
+	+#+           */
 /*   Created: 2025/11/28 20:03:03 by akivam            #+#    #+#             */
 /*   Updated: 2025/11/28 20:03:03 by akivam           ###   ########.tr       */
 /*                                                                            */
@@ -12,6 +15,7 @@
 
 #include "internal_collector.h"
 #include <stdlib.h>
+
 
 /* copy minimum of old and new size*/
 
@@ -42,26 +46,28 @@ static void	*gc_realloc_zero(t_gc_context *context, void *ptr)
  *returns new pointer or NULL on failure
  */
 
-void	*gc_realloc(t_gc_context *context, void *ptr, size_t size)
+void	*gc_realloc(t_gc_context *contex, void *ptr, size_t size)
 {
-	t_gc_allocation	*old_alloc;
-	void			*new_ptr;
-	size_t			copy_size;
+	t_gc_allocation *old_alloc;
+	void *new_ptr;
+	size_t copy_size;
 
-	if (!context)
+	if (!contex)
 		return (NULL);
 	if (!ptr)
-		return (gc_realloc_null(context, size));
+		return (gc_malloc(contex, size));
 	if (size == 0)
-		return (gc_realloc_zero(context, ptr));
-	old_alloc = gc_find_allocation(context, ptr);
+		return (gc_free(contex, ptr), NULL);
+	pthread_mutex_lock(&contex->lock);
+	old_alloc = gc_find_allocation(contex, ptr);
 	if (!old_alloc)
-		return (NULL);
-	new_ptr = gc_malloc(context, size);
+		return (pthread_mutex_unlock(&contex->lock), NULL);
+	copy_size = gc_min_size(old_alloc->size, size);
+	pthread_mutex_unlock(&contex->lock);
+	new_ptr = gc_malloc(contex, size);
 	if (!new_ptr)
 		return (NULL);
-	copy_size = gc_min_size(old_alloc->size, size);
 	gc_memcpy(new_ptr, ptr, copy_size);
-	gc_free(context, ptr);
+	gc_free(contex, ptr);
 	return (new_ptr);
 }

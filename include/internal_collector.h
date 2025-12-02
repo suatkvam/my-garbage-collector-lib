@@ -14,6 +14,7 @@
 # define INTERNAL_COLLECTOR_H
 
 # include "../garbage_collector.h"
+# include <pthread.h>
 
 /*allocation metadata*/
 typedef struct s_gc_allocation
@@ -40,7 +41,7 @@ typedef struct s_gc_scope
 }							t_gc_scope;
 
 /*main context*/
-struct						s_gc_context
+typedef struct s_gc_context
 {
 	t_gc_allocation			*all_allocations;
 	t_gc_allocation			*all_allocations_tail;
@@ -58,7 +59,9 @@ struct						s_gc_context
 	size_t					collect_threshold;
 	size_t					collect_interval;
 	size_t					last_collect_count;
-};
+	pthread_mutex_t			lock;
+	pthread_t				owner_thread;
+}								t_gc_context;
 
 /*memory utility functions*/
 

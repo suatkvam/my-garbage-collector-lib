@@ -96,18 +96,24 @@ void	*gc_malloc(t_gc_context *contex, size_t size)
 
 	if (!contex || size == 0)
 		return (NULL);
+	pthread_mutex_lock(&contex->lock);
 	ptr = malloc(size);
 	if (!ptr)
+	{
+		pthread_mutex_unlock(&contex->lock);
 		return (NULL);
+	}
 	meta_data = gc_meta_create(ptr, size, contex->scope_depth);
 	if (!meta_data)
 	{
 		free(ptr);
+		pthread_mutex_unlock(&contex->lock);
 		return (NULL);
 	}
 	gc_meta_add_global(contex, meta_data);
 	if (contex->current_scope)
-		gc_meta_add_scope(contex, meta_data);
+		gc_meta_add_scope(contex, size);
 	gc_update_and_collecte(contex, size);
+	pthread_mutex_unlock(&contex->lock);
 	return (ptr);
 }
