@@ -17,6 +17,55 @@ A high-performance garbage collector library for C programs, providing automatic
 - **Debug Support**: Comprehensive statistics and debugging tools
 - **Legacy Code Wrapper**: Seamless integration with existing codebases
 
+## 🔒 Thread Safety
+
+The garbage collector is **fully thread-safe** when using the same `t_gc_context` across multiple threads.
+
+### Features
+- ✅ Concurrent allocations from multiple threads
+- ✅ Thread-safe scope management
+- ✅ Protected mark-and-sweep collection
+- ✅ POSIX mutex-based synchronization
+
+### Thread-Safe Operations
+```c
+t_gc_context *gc = gc_create();
+
+// Thread 1
+void *ptr1 = gc_malloc(gc, 1024);
+gc_scope_push(gc);
+// ...
+
+// Thread 2 (same gc context)
+void *ptr2 = gc_malloc(gc, 2048);
+gc_collect(gc);  // Safe concurrent collection
+```
+
+### Performance
+- **Overhead**: ~5-15% due to mutex locking
+- **Scalability**: Good for 2-8 threads
+- **Recommendation**: Use separate contexts per thread when possible
+
+### Testing
+```bash
+make
+./thread_safe_test
+```
+
+Runs concurrent tests with 8 threads performing:
+- 1000 allocations per thread
+- 500 scope operations per thread
+- 300 string operations per thread
+
+### Implementation Details
+- Uses `pthread_mutex_t` for critical sections
+- Locks protect:
+  - Allocation lists (global + scope)
+  - Statistics updates
+  - Scope stack modifications
+  - Mark-and-sweep phases
+- **No locks** in string utilities (they call `gc_malloc` which handles locking)
+
 ## �� Performance
 
 Benchmarked on WSL2 / Ubuntu 22.04:
@@ -437,7 +486,7 @@ gc->collect_interval = 10000;              // Every 10K allocs
 - [x] Statistics and debugging
 - [x] Performance benchmarking
 - [x] CI/CD with GitHub Actions
-- [ ] Thread-safe version
+- [X] Thread-safe version
 - [ ] Generational collection
 - [ ] Compacting collector
 - [ ] Finalizer support
