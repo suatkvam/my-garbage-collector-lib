@@ -19,7 +19,12 @@
 
 t_gc_mode	gc_get_mode(t_gc_context *contex)
 {
+	t_gc_mode	mode;
+
 	if (!contex)
 		return (GC_MODE_MANUAL);
+	pthread_mutex_lock(&contex->lock);
+	mode = contex->mode;
+	pthread_mutex_unlock(&contex->lock);
 	return (contex->mode);
 }

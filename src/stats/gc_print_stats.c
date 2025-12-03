@@ -68,8 +68,11 @@ static void	gc_print_count(const char *label, size_t value)
 */
 void	gc_print_stats(t_gc_context *contex)
 {
+	t_gc_stats	stats;
+
 	if (!contex)
 		return ;
+	gc_get_stats(contex, &stats);
 	gc_write_str("=== GC Statistics ===\n");
 	gc_print_line("Total Allocated", contex->total_allocated);
 	gc_print_line("Total Freed", contex->total_freed);

@@ -19,7 +19,12 @@
 
 void	gc_set_debug(t_gc_context *contex, int enabled)
 {
+	t_gc_mode	mode;
+
 	if (!contex)
 		return ;
+	pthread_mutex_lock(&contex->lock);
+	mode = contex->mode;
+	pthread_mutex_unlock(&contex->lock);
 	contex->debug_mode = enabled;
 }

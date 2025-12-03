@@ -20,9 +20,11 @@ void	gc_set_mode(t_gc_context *contex, t_gc_mode mode)
 {
 	if (!contex)
 		return ;
+	pthread_mutex_lock(&contex->lock);
 	contex->mode = mode;
 	if (mode == GC_MODE_AUTO || mode == GC_MODE_HYBRID)
 		contex->auto_collect = 1;
 	else
 		contex->auto_collect = 0;
+	pthread_mutex_unlock(&contex->lock);
 }

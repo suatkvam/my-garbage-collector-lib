@@ -27,11 +27,14 @@ static void	gc_copy_stats(t_gc_stats *stats, t_gc_context *contex)
 /*
  *get current gc statistics
  *stats: pointer to stats structure to fill
+ *thread-safe: locks context during read
  */
 
 void	gc_get_stats(t_gc_context *contex, t_gc_stats *stats)
 {
 	if (!contex || !stats)
 		return ;
+	pthread_mutex_lock(&contex->lock);
 	gc_copy_stats(stats, contex);
+	pthread_mutex_unlock(&contex->lock);
 }
