@@ -70,9 +70,11 @@ void	gc_scope_pop(t_gc_context *contex)
 
 	if (!contex || !contex->current_scope)
 		return ;
+	pthread_mutex_unlock(&contex->lock);
 	scope_to_free = contex->current_scope;
 	gc_free_scope_allocs(contex, scope_to_free);
 	contex->current_scope = scope_to_free->prev;
 	contex->scope_depth--;
+	pthread_mutex_unlock(&contex->lock);
 	free(scope_to_free);
 }

@@ -45,11 +45,16 @@ void	gc_free(t_gc_context *context, void *ptr)
 
 	if (!context || !ptr)
 		return ;
+	pthread_mutex_lock(&context->lock);
 	alloc = gc_find_allocation(context, ptr);
 	if (!alloc)
+	{
+		pthread_mutex_unlock(&context->lock);
 		return ;
+	}
 	gc_remove_from_list(context, alloc);
 	gc_update_free_stats(context, alloc->size);
+	pthread_mutex_unlock(&context->lock);
 	free(alloc->ptr);
 	free(alloc);
 }

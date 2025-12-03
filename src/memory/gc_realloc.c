@@ -55,13 +55,13 @@ void	*gc_realloc(t_gc_context *contex, void *ptr, size_t size)
 	if (!contex)
 		return (NULL);
 	if (!ptr)
-		return (gc_malloc(contex, size));
+		return (gc_realloc_null(contex, size));
 	if (size == 0)
-		return (gc_free(contex, ptr), NULL);
+		return (gc_realloc_zero(contex, ptr));
 	pthread_mutex_lock(&contex->lock);
 	old_alloc = gc_find_allocation(contex, ptr);
 	if (!old_alloc)
-		return (pthread_mutex_unlock(&contex->lock), NULL);
+		return (pthread_mutex_unlock(&contex->lock),NULL);
 	copy_size = gc_min_size(old_alloc->size, size);
 	pthread_mutex_unlock(&contex->lock);
 	new_ptr = gc_malloc(contex, size);

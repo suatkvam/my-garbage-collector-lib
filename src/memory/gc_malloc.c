@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   gc_malloc.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2025/11/28 20:03:03 by akivam            #+#    #+#             */
 /*   Updated: 2025/11/28 20:03:03 by akivam           ###   ########.tr       */
 /*                                                                            */
@@ -17,7 +20,7 @@
 
 static t_gc_allocation	*gc_meta_create(void *ptr, size_t size, size_t level)
 {
-	t_gc_allocation	*meta_data;
+	t_gc_allocation *meta_data;
 
 	meta_data = (t_gc_allocation *)malloc(sizeof(t_gc_allocation));
 	if (!meta_data)
@@ -53,7 +56,7 @@ static void	gc_meta_add_global(t_gc_context *contex,
 /*add metadata to current scope's singly-linked list (scope_next)*/
 static void	gc_meta_add_scope(t_gc_context *contex, t_gc_allocation *meta_data)
 {
-	t_gc_scope	*scope;
+	t_gc_scope *scope;
 
 	scope = contex->current_scope;
 	if (!scope)
@@ -78,10 +81,18 @@ static void	gc_update_and_collecte(t_gc_context *contex, size_t size)
 	if (!contex->auto_collect)
 		return ;
 	if (contex->current_usage >= contex->collect_threshold)
-		gc_collect(contex);
+	{
+		gc_mark(contex);
+		gc_sweep(contex);
+		contex->last_collect_count = contex->allocation_count;
+	}
 	else if (contex->allocation_count
 		- contex->last_collect_count >= contex->collect_interval)
-		gc_collect(contex);
+	{
+		gc_mark(contex);
+		gc_sweep(contex);
+		contex->last_collect_count = contex->allocation_count;
+	}
 }
 
 /*
@@ -91,8 +102,8 @@ static void	gc_update_and_collecte(t_gc_context *contex, size_t size)
 
 void	*gc_malloc(t_gc_context *contex, size_t size)
 {
-	void			*ptr;
-	t_gc_allocation	*meta_data;
+	void *ptr;
+	t_gc_allocation *meta_data;
 
 	if (!contex || size == 0)
 		return (NULL);
@@ -112,7 +123,7 @@ void	*gc_malloc(t_gc_context *contex, size_t size)
 	}
 	gc_meta_add_global(contex, meta_data);
 	if (contex->current_scope)
-		gc_meta_add_scope(contex, size);
+		gc_meta_add_scope(contex, meta_data);
 	gc_update_and_collecte(contex, size);
 	pthread_mutex_unlock(&contex->lock);
 	return (ptr);

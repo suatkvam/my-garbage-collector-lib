@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   gc_scope_push.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2025/11/28 20:04:21 by akivam            #+#    #+#             */
 /*   Updated: 2025/11/28 20:04:21 by akivam           ###   ########.tr       */
 /*                                                                            */
@@ -31,16 +34,21 @@ static void	gc_init_scope(t_gc_scope *scope, size_t level)
  */
 int	gc_scope_push(t_gc_context *context)
 {
-	t_gc_scope	*new_scope;
+	t_gc_scope *new_scope;
 
 	if (!context)
 		return (0);
+	pthread_mutex_lock(&context->lock);
 	new_scope = (t_gc_scope *)malloc(sizeof(t_gc_scope));
 	if (!new_scope)
+	{
+		pthread_mutex_unlock(&context->lock);
 		return (0);
+	}
 	gc_init_scope(new_scope, context->scope_depth);
 	new_scope->prev = context->current_scope;
 	context->current_scope = new_scope;
 	context->scope_depth++;
+	pthread_mutex_unlock(&context->lock);
 	return (1);
 }
