@@ -1,8 +1,8 @@
-# My Garbage Collector Library
+# My Garbage Collector Library (Thread-Safe)
 
-[![Build Status](https://github.com/suatkvam/my-garbage-collector-lib/workflows/Build%20and%20Release/badge.svg)](https://github.com/suatkvam/my-garbage-collector-lib/actions)
-[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
-[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey.svg)](https://github.com/suatkvam/my-garbage-collector-lib)
+[![Build Status](https://github. com/suatkvam/my-garbage-collector-lib/workflows/Build%20and%20Release/badge.svg)](https://github.com/suatkvam/my-garbage-collector-lib/actions)
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202. 0-brightgreen. svg)](https://opensource.org/licenses/MPL-2.0)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey. svg)](https://github.com/suatkvam/my-garbage-collector-lib)
 
 A high-performance garbage collector library for C programs, providing automatic memory management through scope-based tracking and mark-and-sweep collection.
 
@@ -16,16 +16,18 @@ A high-performance garbage collector library for C programs, providing automatic
 - **Easy Integration**: Simple API with minimal overhead
 - **Debug Support**: Comprehensive statistics and debugging tools
 - **Legacy Code Wrapper**: Seamless integration with existing codebases
+- **Thread-Safe Operations**: Full concurrent support with mutex-based synchronization
 
 ## 🔒 Thread Safety
 
-The garbage collector is **fully thread-safe** when using the same `t_gc_context` across multiple threads.
+The garbage collector is **fully thread-safe** when using the same `t_gc_context` across multiple threads. 
 
 ### Features
 - ✅ Concurrent allocations from multiple threads
 - ✅ Thread-safe scope management
 - ✅ Protected mark-and-sweep collection
 - ✅ POSIX mutex-based synchronization
+- ✅ Read/Write stress tested for race condition safety
 
 ### Thread-Safe Operations
 ```c
@@ -34,7 +36,7 @@ t_gc_context *gc = gc_create();
 // Thread 1
 void *ptr1 = gc_malloc(gc, 1024);
 gc_scope_push(gc);
-// ...
+// ... 
 
 // Thread 2 (same gc context)
 void *ptr2 = gc_malloc(gc, 2048);
@@ -44,9 +46,17 @@ gc_collect(gc);  // Safe concurrent collection
 ### Performance
 - **Overhead**: ~5-15% due to mutex locking
 - **Scalability**: Good for 2-8 threads
-- **Recommendation**: Use separate contexts per thread when possible
+- **Single-threaded benchmark**: ~23% faster than standard malloc/free
+- **Comparison** (10K operations):
+  - Standard malloc/free: 4.97 ms
+  - GC malloc: 3. 85 ms
+  - **Result: ~23% faster in single-threaded scenarios!** ⚡
 
 ### Testing
+
+The library includes comprehensive thread-safety tests:
+
+**1. Concurrent Allocation Test**
 ```bash
 make
 ./thread_safe_test
@@ -57,6 +67,13 @@ Runs concurrent tests with 8 threads performing:
 - 500 scope operations per thread
 - 300 string operations per thread
 
+**2. Read/Write Stress Test**
+```bash
+./thread_safe_read_test
+```
+
+Tests reading statistics while other threads are heavily modifying memory. This ensures no race conditions occur during list traversal.
+
 ### Implementation Details
 - Uses `pthread_mutex_t` for critical sections
 - Locks protect:
@@ -66,7 +83,147 @@ Runs concurrent tests with 8 threads performing:
   - Mark-and-sweep phases
 - **No locks** in string utilities (they call `gc_malloc` which handles locking)
 
-## �� Performance
+### Thread-Safe API Reference
+
+#### Context Management
+
+**`t_gc_context *gc_create(void)`**
+
+Creates a new context with internal mutex lock initialization.
+
+**`void gc_destroy(t_gc_context *ctx)`**
+
+Acquires the lock, frees all managed memory, destroys the mutex, and frees the context itself. 
+
+⚠️ **Warning**: Ensure no other threads are actively using the context before calling destroy.
+
+#### Memory Allocation (Thread-Safe)
+
+All allocation functions are thread-safe and can be called concurrently:
+
+**`void *gc_malloc(t_gc_context *ctx, size_t size)`**
+
+Allocates tracked memory. Locks the context during allocation to update internal lists safely. 
+
+**`void *gc_calloc(t_gc_context *ctx, size_t nmemb, size_t size)`**
+
+Allocates zero-initialized memory safely using gc_malloc.
+
+**`void *gc_realloc(t_gc_context *ctx, void *ptr, size_t size)`**
+
+Resizes an existing allocation atomically.
+
+#### Collection Control
+
+**`void gc_collect(t_gc_context *ctx)`**
+
+Triggers a Mark-and-Sweep cycle. 
+
+⚠️ **Blocking**: This operation holds the lock for the duration of the mark and sweep phases. Other threads will be blocked if they try to allocate during an ongoing collection.
+
+**`void gc_set_mode(t_gc_context *ctx, t_gc_mode mode)`**
+
+Sets the collection mode (Manual, Auto, Hybrid) safely using mutex protection.
+
+#### String Utilities
+
+All string utilities (`gc_strdup`, `gc_strjoin`, etc.) rely on `gc_malloc`. Therefore, they inherit the thread-safety of the underlying allocator.
+
+#### Scope Management
+
+Scope operations are protected by locks to ensure the scope stack remains consistent even under high concurrency.
+
+**`int gc_scope_push(t_gc_context *ctx)`**
+
+Atomic operation to push a new scope level.
+
+**`void gc_scope_pop(t_gc_context *ctx)`**
+
+Atomic operation to pop the current scope and free all associated resources. 
+
+⚠️ **Concurrency Note**: If Thread A pushes a scope and Thread B pushes a scope on the same context, they are essentially sharing the same scope stack depth. For strictly isolated scopes per thread, use separate contexts.
+
+### Best Practices for Multi-Threading
+
+#### ✅ DO:
+
+1. **Context per Thread (Recommended)**: For maximum performance in high-concurrency applications, create a separate `gc_create()` context for each worker thread. This eliminates lock contention entirely.
+
+```c
+// Thread function
+void *worker_thread(void *arg)
+{
+    t_gc_context *gc = gc_create();  // Each thread has its own context
+    
+    // Do work... 
+    void *data = gc_malloc(gc, 1024);
+    
+    gc_destroy(gc);
+    return NULL;
+}
+```
+
+2. **Use Manual Mode for Predictable Timing**: Use `GC_MODE_MANUAL` to control when collections happen to avoid unexpected pauses. 
+
+3. **Short Critical Sections**: The library is optimized to keep locks for as short a time as possible. 
+
+#### ❌ DON'T:
+
+1. **Shared Context Under Heavy Load**: If you must share data between threads using a single GC context, be aware that heavy allocation in one thread might slightly delay others due to locking. 
+
+2. **Destroy While Active**: Never call `gc_destroy()` while other threads are still using the context. 
+
+3. **Long Collections on Large Heaps**: Be aware that `gc_collect()` on a very large heap can take time and block other threads.
+
+### Example: Multi-Threaded Usage
+
+```c
+#include "garbage_collector.h"
+#include <pthread.h>
+#include <stdio.h>
+
+#define NUM_THREADS 4
+
+void *worker(void *arg)
+{
+    t_gc_context *gc = (t_gc_context *)arg;
+    
+    for (int i = 0; i < 1000; i++)
+    {
+        gc_scope_push(gc);
+        
+        char *str = gc_strdup(gc, "Thread-safe allocation");
+        int *numbers = gc_malloc(gc, sizeof(int) * 100);
+        
+        // Do work with allocations... 
+        
+        gc_scope_pop(gc);  // Atomic cleanup
+    }
+    
+    return NULL;
+}
+
+int main(void)
+{
+    t_gc_context *gc = gc_create();
+    pthread_t threads[NUM_THREADS];
+    
+    // Launch threads sharing same context
+    for (int i = 0; i < NUM_THREADS; i++)
+        pthread_create(&threads[i], NULL, worker, gc);
+    
+    // Wait for completion
+    for (int i = 0; i < NUM_THREADS; i++)
+        pthread_join(threads[i], NULL);
+    
+    gc_print_stats(gc);
+    gc_destroy(gc);
+    
+    return 0;
+}
+```
+
+## 📊 Performance
 
 Benchmarked on WSL2 / Ubuntu 22.04:
 
@@ -83,14 +240,14 @@ Benchmarked on WSL2 / Ubuntu 22.04:
 **Comparison with Standard malloc:**
 - Standard malloc/free: 4.97 ms (10K operations)
 - GC malloc: 3.85 ms (10K operations)
-- **Result: ~23% faster!** ⚡
+- **Result: ~23% faster! ** ⚡
 
 ## 🚀 Quick Start
 
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/suatkvam/my-garbage-collector-lib.git
+git clone https://github.com/suatkvam/my-garbage-collector-lib. git
 cd my-garbage-collector-lib
 
 # Build the library
@@ -132,12 +289,12 @@ int main(void)
 cc your_program.c garbage_collecter.a -o your_program
 ```
 
-## �� Core API
+## 📚 Core API
 
 ### Context Management
 
 #### `t_gc_context *gc_create(void)`
-Creates and initializes a new GC context with automatic root scope.
+Creates and initializes a new GC context with automatic root scope. 
 
 #### `void gc_destroy(t_gc_context *context)`
 Destroys context and frees all managed memory.
@@ -148,7 +305,7 @@ Destroys context and frees all managed memory.
 Allocates memory tracked by the garbage collector.
 
 #### `void *gc_calloc(t_gc_context *ctx, size_t nmemb, size_t size)`
-Allocates and zero-initializes memory.
+Allocates and zero-initializes memory. 
 
 #### `void *gc_realloc(t_gc_context *ctx, void *ptr, size_t size)`
 Reallocates memory block to new size.
@@ -185,7 +342,7 @@ gc_scope_push(gc);
 // Allocations in this scope
 char *temp = gc_malloc(gc, 1024);
 
-// Pop scope - automatic cleanup!
+// Pop scope - automatic cleanup! 
 gc_scope_pop(gc);
 ```
 
@@ -260,7 +417,7 @@ int main(void)
     t_gc_context *gc = gc_create();
     gc_wrapper_push_context(gc);
     
-    // Now malloc/free use GC automatically!
+    // Now malloc/free use GC automatically! 
     int *data = malloc(100 * sizeof(int));
     char *str = strdup("wrapped!");
     
@@ -292,6 +449,8 @@ The `examples/` directory contains detailed demonstrations:
 4. **string_utils_example.c** - String utilities
 5. **debug_example.c** - Statistics and debugging
 6. **benchmark_example.c** - Performance testing
+7. **thread_safe_test.c** - Concurrent allocation test
+8. **thread_safe_read_test.c** - Read/Write stress test
 
 **Build and run:**
 ```bash
@@ -332,7 +491,7 @@ Each allocation exists in TWO lists:
 **Scope-Based (Fast, Deterministic):**
 ```c
 gc_scope_push(gc);     // Create scope
-// ... allocations ...
+// ...  allocations ...
 gc_scope_pop(gc);      // O(n) - free all in scope
 ```
 
@@ -350,12 +509,14 @@ gc_collect(gc);
 - Call `gc_destroy()` before program exit
 - Set appropriate collection thresholds
 - Use `gc_strdup` instead of manual string copying
+- Use separate contexts per thread for maximum performance
 
 ### ❌ DON'T:
 - Mix GC and non-GC allocations
 - Use pointers after scope pop
 - Forget to create GC context
 - Rely on collection timing in critical code
+- Destroy context while other threads are using it
 
 ### Memory Management Patterns
 
@@ -408,7 +569,7 @@ void bulk_process(t_gc_context *gc)
 
 This project is licensed under the **Mozilla Public License 2.0** (MPL-2.0).
 
-### 🤔 What does this mean?
+### 🤔 What does this mean? 
 
 **You CAN:**
 - ✅ Use this library in commercial projects
@@ -431,18 +592,18 @@ This project is licensed under the **Mozilla Public License 2.0** (MPL-2.0).
 ```
 Your Game/Software (Proprietary)
 ├── game_engine.c         ← Your code (closed source ✅)
-├── graphics.c            ← Your code (closed source ✅)
+├── graphics. c            ← Your code (closed source ✅)
 └── lib/
     ├── gc_malloc.c       ← MPL file (if modified, share ✅)
     └── gc_collect.c      ← MPL file (if modified, share ✅)
 ```
 
 **Result:** Your game stays closed-source, but if you improve `gc_malloc.c`, 
-you share that improvement back to the community. Fair deal! 🤝
+you share that improvement back to the community.  Fair deal!  🤝
 
 ### 🎯 Why MPL 2.0?
 
-This library represents **1 week of intensive development**. MPL 2.0 ensures:
+This library represents **1 week of intensive development**.  MPL 2.0 ensures:
 - 🔒 My work is protected
 - 🤝 Improvements come back to me
 - 💼 Companies can use it commercially
@@ -469,12 +630,29 @@ gc_scope_pop(gc);  // Frees memory
 
 ### Performance Issues
 
-**Problem:** Collection takes too long.
+**Problem:** Collection takes too long. 
 
 **Solution:** Adjust thresholds:
 ```c
 gc->collect_threshold = 50 * 1024 * 1024;  // 50MB
 gc->collect_interval = 10000;              // Every 10K allocs
+```
+
+### Thread Contention
+
+**Problem:** High lock contention in multi-threaded scenarios.
+
+**Solution:** Use separate contexts per thread:
+```c
+// Instead of sharing one context
+pthread_t threads[8];
+t_gc_context *gc = gc_create();
+
+// Use one context per thread
+pthread_t threads[8];
+t_gc_context *contexts[8];
+for (int i = 0; i < 8; i++)
+    contexts[i] = gc_create();
 ```
 
 ## 📈 Roadmap
@@ -486,7 +664,7 @@ gc->collect_interval = 10000;              // Every 10K allocs
 - [x] Statistics and debugging
 - [x] Performance benchmarking
 - [x] CI/CD with GitHub Actions
-- [X] Thread-safe version
+- [x] Thread-safe version
 - [ ] Generational collection
 - [ ] Compacting collector
 - [ ] Finalizer support
@@ -496,7 +674,7 @@ gc->collect_interval = 10000;              // Every 10K allocs
 Contributions are welcome! Please:
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing`)
+2.  Create a feature branch (`git checkout -b feature/amazing`)
 3. Follow 42 coding standards
 4. Add tests for new features
 5. Submit a pull request
@@ -508,7 +686,7 @@ Contributions are welcome! Please:
 
 ## 🙏 Acknowledgments
 
-Thanks to all contributors and the C community!
+Thanks to all contributors and the C community! 
 
 ## 📞 Support
 
