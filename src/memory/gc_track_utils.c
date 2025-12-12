@@ -58,11 +58,11 @@ t_gc_allocation	*gc_create_meta(void *ptr, size_t size, size_t level)
 /*
  * Update context statistics
  */
-void	gc_update_stats(t_gc_context *ctx, size_t size)
+void	gc_update_stats(t_gc_context *contex, size_t size)
 {
-	ctx->total_allocated += size;
-	ctx->current_usage += size;
-	ctx->allocation_count++;
-	if (ctx->current_usage > ctx->peak_usage)
-		ctx->peak_usage = ctx->current_usage;
+	contex->total_allocated += size;
+	contex->current_usage += size;
+	contex->allocation_count++;
+	if (contex->current_usage > contex->peak_usage)
+		contex->peak_usage = contex->current_usage;
 }

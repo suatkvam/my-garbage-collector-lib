@@ -92,4 +92,10 @@ void						gc_scope_destroy(t_gc_scope *scope);
 void						gc_mark_pahese(t_gc_context *contex);
 size_t						gc_sweep_phase(t_gc_context *contex);
 
+/* gc_track_utils helper functions */
+size_t						gc_estimate_size(void *ptr);
+t_gc_allocation				*gc_create_meta(void *ptr, size_t size,
+								size_t level);
+void						gc_update_stats(t_gc_context *contex, size_t size);
+
 #endif
