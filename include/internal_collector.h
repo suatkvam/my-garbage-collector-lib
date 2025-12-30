@@ -11,91 +11,106 @@
 /* ************************************************************************** */
 
 #ifndef INTERNAL_COLLECTOR_H
-# define INTERNAL_COLLECTOR_H
+#define INTERNAL_COLLECTOR_H
+// Hash table configuration
+#define GC_HASH_SIZE 1024
+// FNV-1a hash constants
+#define FNV_OFFSET_BASIS 2166136261u
+#define FNV_PRIME 16777619u
+# define BYTE_MASK 0xFF
 
-# include "../garbage_collector.h"
+// Pointer to size_t cast macro
+#define PTR_TO_SIZE(ptr) ((size_t)(ptr))
+
+#include "../garbage_collector.h"
 
 /*allocation metadata*/
-typedef struct s_gc_allocation
-{
-	void					*ptr;
-	size_t					size;
-	size_t					scope_level;
-	int						marked;
-	struct s_gc_allocation	*next;
-	struct s_gc_allocation	*prev;
-	struct s_gc_allocation	*scope_next;
+typedef struct s_gc_allocation {
+  void *ptr;
+  size_t size;
+  size_t scope_level;
+  int marked;
+  struct s_gc_allocation *next;
+  struct s_gc_allocation *prev;
+  struct s_gc_allocation *scope_next;
 
-}							t_gc_allocation;
+} t_gc_allocation;
+
+// hash table bucket structure
+typedef struct s_gc_hash_bucket {
+  void *ptr;
+  t_gc_allocation *allocation;
+  struct s_gc_hash_bucket *next;
+} t_gc_hash_bucket;
 
 /*scope node*/
 
-typedef struct s_gc_scope
-{
-	size_t					level;
-	t_gc_allocation			*first;
-	t_gc_allocation			*last;
-	size_t					allocation_count;
-	struct s_gc_scope		*prev;
-}							t_gc_scope;
+typedef struct s_gc_scope {
+  size_t level;
+  t_gc_allocation *first;
+  t_gc_allocation *last;
+  size_t allocation_count;
+  struct s_gc_scope *prev;
+} t_gc_scope;
 
 /*main context*/
-struct						s_gc_context
-{
-	t_gc_allocation			*all_allocations;
-	t_gc_allocation			*all_allocations_tail;
-	t_gc_scope				*current_scope;
-	size_t					scope_depth;
-	size_t					total_allocated;
-	size_t					total_freed;
-	size_t					current_usage;
-	size_t					peak_usage;
-	size_t					allocation_count;
-	size_t					free_count;
-	t_gc_mode				mode;
-	int						debug_mode;
-	int						auto_collect;
-	size_t					collect_threshold;
-	size_t					collect_interval;
-	size_t					last_collect_count;
+struct s_gc_context {
+  t_gc_allocation *all_allocations;
+  t_gc_allocation *all_allocations_tail;
+  t_gc_scope *current_scope;
+  size_t scope_depth;
+  size_t total_allocated;
+  size_t total_freed;
+  size_t current_usage;
+  size_t peak_usage;
+  size_t allocation_count;
+  size_t free_count;
+  t_gc_mode mode;
+  int debug_mode;
+  int auto_collect;
+  size_t collect_threshold;
+  size_t collect_interval;
+  size_t last_collect_count;
+  t_gc_hash_bucket *hash_table[GC_HASH_SIZE]; //! bu uyarı yiyebilir norm dan
 };
 
 /*memory utility functions*/
 
-void						*gc_memcpy(void *dest, const void *src, size_t n);
-int							gc_memcmp(const void *s1, const void *s2, size_t n);
-void						*gc_memchr(const void *s1, int c, size_t n);
-void						*gc_memmove(void *dest, const void *src, size_t n);
-void						*gc_memset(void *s, int c, size_t n);
-void						gc_bzero(void *s, size_t n);
+void *gc_memcpy(void *dest, const void *src, size_t n);
+int gc_memcmp(const void *s1, const void *s2, size_t n);
+void *gc_memchr(const void *s1, int c, size_t n);
+void *gc_memmove(void *dest, const void *src, size_t n);
+void *gc_memset(void *s, int c, size_t n);
+void gc_bzero(void *s, size_t n);
 
 /* internal helper funcitons*/
 
-t_gc_allocation				*gc_alloc_crate(void *ptr, size_t size,
-								size_t level);
-t_gc_allocation				*gc_find_allocation(t_gc_context *contex,
-								void *ptr);
-void						gc_alloc_destroy(t_gc_allocation *allo);
-void						gc_free(t_gc_context *contex, void *ptr);
-void						gc_alloc_add_to_list(t_gc_context *contex,
-								t_gc_allocation *allo);
-void						gc_alloc_remove_from_list(t_gc_context *contex,
-								t_gc_allocation *alloc);
-void						gc_alloc_add_to_scope(t_gc_scope *scope,
-								t_gc_allocation *alloc);
+t_gc_allocation *gc_alloc_crate(void *ptr, size_t size, size_t level);
+t_gc_allocation *gc_find_allocation(t_gc_context *contex, void *ptr);
+void gc_alloc_destroy(t_gc_allocation *allo);
+void gc_free(t_gc_context *contex, void *ptr);
+void gc_alloc_add_to_list(t_gc_context *contex, t_gc_allocation *allo);
+void gc_alloc_remove_from_list(t_gc_context *contex, t_gc_allocation *alloc);
+void gc_alloc_add_to_scope(t_gc_scope *scope, t_gc_allocation *alloc);
 
-t_gc_scope					*gc_scope_create(size_t level);
-void						gc_mark(t_gc_context *contex);
-void						gc_sweep(t_gc_context *contex);
-int							gc_scope_push(t_gc_context *contex);
-void						gc_scope_destroy(t_gc_scope *scope);
-void						gc_mark_pahese(t_gc_context *contex);
-size_t						gc_sweep_phase(t_gc_context *contex);
+t_gc_scope *gc_scope_create(size_t level);
+void gc_mark(t_gc_context *contex);
+void gc_sweep(t_gc_context *contex);
+int gc_scope_push(t_gc_context *contex);
+void gc_scope_destroy(t_gc_scope *scope);
+void gc_mark_pahese(t_gc_context *contex);
+size_t gc_sweep_phase(t_gc_context *contex);
 
 /* gc_track_utils helper functions */
-size_t						gc_estimate_size(void *ptr);
-t_gc_allocation				*gc_create_meta(void *ptr, size_t size,
-								size_t level);
-void						gc_update_stats(t_gc_context *contex, size_t size);
+size_t gc_estimate_size(void *ptr);
+t_gc_allocation *gc_create_meta(void *ptr, size_t size, size_t level);
+void gc_update_stats(t_gc_context *contex, size_t size);
+
+// Hash functions
+size_t gc_hash_ptr(void *ptr);
+void gc_hash_add(t_gc_context *contex, void *ptr, t_gc_allocation *alloc);
+t_gc_allocation *gc_hash_find(t_gc_context *contex, void *ptr);
+void gc_hash_remove(t_gc_context *contex, void *ptr);
+void gc_hash_clear(t_gc_context *contex);
 
 #endif
