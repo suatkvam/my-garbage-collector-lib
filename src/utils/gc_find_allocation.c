@@ -12,17 +12,13 @@
 
 #include "internal_collector.h"
 
-/*find aloocation metadata by user pointer*/
+/*
+	find aloocation metadata by user pointer
+	now uses hash table for O(1) lookup instead of O(n) linear search
+*/
 t_gc_allocation	*gc_find_allocation(t_gc_context *contex, void *ptr)
 {
-	t_gc_allocation	*current;
-
-	current = contex->all_allocations;
-	while (current)
-	{
-		if (current->ptr == ptr)
-			return (current);
-		current = current->next;
-	}
-	return (NULL);
+	if(!contex || !ptr)
+		return (NULL);
+	return(gc_hash_find(contex, ptr));	
 }

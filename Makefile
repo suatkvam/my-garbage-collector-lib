@@ -45,6 +45,7 @@ SRC = memory/gc_malloc.c \
       utils/gc_bzero.c \
       utils/memory_utils.c \
       utils/gc_find_allocation.c \
+      utils/gc_hash.c \
       config/gc_set_mode.c \
       config/gc_get_mode.c \
       config/gc_set_debug.c \

@@ -53,6 +53,7 @@ void	gc_destroy(t_gc_context *contex)
 {
 	if (!contex)
 		return ;
+	gc_hash_clear(contex);
 	gc_free_all_allocations(contex);
 	gc_free_all_scopes(contex);
 	free(contex);

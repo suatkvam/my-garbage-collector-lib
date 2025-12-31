@@ -23,6 +23,13 @@ static void	gc_set_defaults(t_gc_context *contex)
 	contex->last_collect_count = 0;
 }
 
+static void gc_init_hash_table(t_gc_context *contex)
+{
+	size_t i;
+	i = -1;
+	while(++i < GC_HASH_SIZE)
+		contex->hash_table[i] = NULL;
+}
 /*
 **	create and initialize garbage collector context
 **	automatically creates root scope for non-scoped allocations
@@ -36,6 +43,7 @@ t_gc_context	*gc_create(void)
 	if (!contex)
 		return (NULL);
 	gc_memset(contex, 0, sizeof(t_gc_context));
+	gc_init_hash_table(contex);
 	gc_set_defaults(contex);
 	if (!gc_scope_push(contex))
 	{

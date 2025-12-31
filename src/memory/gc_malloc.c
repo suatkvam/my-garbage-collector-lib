@@ -108,6 +108,7 @@ void	*gc_malloc(t_gc_context *contex, size_t size)
 	gc_meta_add_global(contex, meta_data);
 	if (contex->current_scope)
 		gc_meta_add_scope(contex, meta_data);
+	gc_hash_add(contex, ptr, meta_data);
 	gc_update_and_collecte(contex, size);
 	return (ptr);
 }

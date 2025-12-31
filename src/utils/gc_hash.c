@@ -9,18 +9,18 @@
 size_t gc_hash_ptr(void *ptr)
 {
 
-	size_t addres;
+	size_t address;
 	size_t hash;
 	int i;
 
-	addres = PTR_TO_SIZE(ptr);
+	address = PTR_TO_SIZE(ptr);
 	hash = FNV_OFFSET_BASIS;
 	i = 0;
 	while (i < (int)sizeof(void *))
 	{
-		hash ^= (addres & BYTE_MASK);
+		hash ^= (address & BYTE_MASK);
 		hash *= FNV_PRIME;
-		addres >>= 8;
+		address >>= 8;
 		i++;
 	}
 	return (hash % GC_HASH_SIZE);
@@ -38,6 +38,8 @@ void gc_hash_add(t_gc_context *contex, void *ptr, t_gc_allocation *allocation)
 	if(!contex || !ptr || ! allocation)
 		return ;
 	bucket = (t_gc_hash_bucket *)malloc(sizeof(t_gc_hash_bucket));
+	if(!bucket)
+		return ;
 	bucket->ptr = ptr;
 	bucket->allocation = allocation;
 	index = gc_hash_ptr(ptr);
