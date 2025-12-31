@@ -14,19 +14,20 @@
 #include <stdlib.h>
 
 /*free all remaining allocations in global list*/
-static void	gc_free_all_allocations(t_gc_context *contex)
+static void gc_free_all_allocations(t_gc_context *contex)
 {
-	t_gc_allocation	*current;
-	t_gc_allocation	*next;
+    t_gc_allocation *current;
+    t_gc_allocation *next;
 
-	current = contex->all_allocations;
-	while (current)
-	{
-		next = current->next;
-		free(current->ptr);
-		free(current);
+    current = contex->all_allocations;
+    while (current)
+    {
+        next = current->next;        
+        if (current->from_pool == 0)
+            free(current->ptr);
+        free(current);
 		current = next;
-	}
+    }
 }
 
 /*free all remaining scopes in stack*/
@@ -56,5 +57,6 @@ void	gc_destroy(t_gc_context *contex)
 	gc_hash_clear(contex);
 	gc_free_all_allocations(contex);
 	gc_free_all_scopes(contex);
+	gc_pool_destroy_all(contex);
 	free(contex);
 }

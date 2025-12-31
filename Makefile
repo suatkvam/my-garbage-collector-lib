@@ -21,6 +21,7 @@ SRC = memory/gc_malloc.c \
       memory/gc_free.c \
       memory/gc_track_utils.c \
       memory/gc_track.c \
+      memory/gc_pool.c \
       collector/gc_collect.c \
       collector/gc_mark.c \
       collector/gc_sweep.c \

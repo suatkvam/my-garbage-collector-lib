@@ -19,6 +19,10 @@
 #define FNV_PRIME 16777619u
 # define BYTE_MASK 0xFF
 
+// memory pool configuration
+#define GC_POOL_SIZE (1024 * 1024) // 1MB per pool
+#define GC_SMALL_ALLOC_THRESHOLD 256 //small: <256 bytes
+
 // Pointer to size_t cast macro
 #define PTR_TO_SIZE(ptr) ((size_t)(ptr))
 
@@ -30,6 +34,7 @@ typedef struct s_gc_allocation {
   size_t size;
   size_t scope_level;
   int marked;
+  int from_pool;
   struct s_gc_allocation *next;
   struct s_gc_allocation *prev;
   struct s_gc_allocation *scope_next;
@@ -42,6 +47,15 @@ typedef struct s_gc_hash_bucket {
   t_gc_allocation *allocation;
   struct s_gc_hash_bucket *next;
 } t_gc_hash_bucket;
+
+// memory pool structure
+typedef struct s_gc_pool
+{
+    void *memory; //pre-allocated block
+    size_t size;// total size (1MB)
+    size_t used; //current offset (bump allocator)
+    struct s_gc_pool *next;
+} t_gc_pool ;
 
 /*scope node*/
 
@@ -72,6 +86,8 @@ struct s_gc_context {
   size_t collect_interval;
   size_t last_collect_count;
   t_gc_hash_bucket *hash_table[GC_HASH_SIZE]; //! bu uyarı yiyebilir norm dan
+  t_gc_pool *pool_list;
+  size_t pool_count;
 };
 
 /*memory utility functions*/
@@ -112,5 +128,10 @@ void gc_hash_add(t_gc_context *contex, void *ptr, t_gc_allocation *alloc);
 t_gc_allocation *gc_hash_find(t_gc_context *contex, void *ptr);
 void gc_hash_remove(t_gc_context *contex, void *ptr);
 void gc_hash_clear(t_gc_context *contex);
+
+// Pool functions
+t_gc_pool *gc_pool_create(size_t size);
+void *gc_pool_alloc(t_gc_context *contex, size_t size);
+void gc_pool_destroy_all(t_gc_context *contex);
 
 #endif

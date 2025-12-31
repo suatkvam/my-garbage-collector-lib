@@ -15,7 +15,7 @@
 
 /*create allocation metadata (uses plain malloc - no gc tracking)*/
 
-static t_gc_allocation	*gc_meta_create(void *ptr, size_t size, size_t level)
+static t_gc_allocation	*gc_meta_create(void *ptr, size_t size, size_t level, int from_pool)
 {
 	t_gc_allocation	*meta_data;
 
@@ -27,6 +27,7 @@ static t_gc_allocation	*gc_meta_create(void *ptr, size_t size, size_t level)
 	meta_data->size = size;
 	meta_data->scope_level = level;
 	meta_data->marked = 0;
+	meta_data->from_pool = from_pool;
 	meta_data->next = NULL;
 	meta_data->prev = NULL;
 	meta_data->scope_next = NULL;
@@ -89,26 +90,40 @@ static void	gc_update_and_collecte(t_gc_context *contex, size_t size)
  * uses plain malloc for both allocations to void circular depency
  */
 
-void	*gc_malloc(t_gc_context *contex, size_t size)
-{
-	void			*ptr;
-	t_gc_allocation	*meta_data;
+// gc_malloc ana fonksiyonunu değiştir:
 
-	if (!contex || size == 0)
-		return (NULL);
-	ptr = malloc(size);
-	if (!ptr)
-		return (NULL);
-	meta_data = gc_meta_create(ptr, size, contex->scope_depth);
-	if (!meta_data)
-	{
-		free(ptr);
-		return (NULL);
-	}
-	gc_meta_add_global(contex, meta_data);
-	if (contex->current_scope)
-		gc_meta_add_scope(contex, meta_data);
-	gc_hash_add(contex, ptr, meta_data);
-	gc_update_and_collecte(contex, size);
-	return (ptr);
+void *gc_malloc(t_gc_context *contex, size_t size)
+{
+    void            *ptr;
+    t_gc_allocation *meta_data;
+    int             from_pool;
+
+    if (!contex || size == 0)
+        return (NULL);    
+    from_pool = 0;
+    if (size < GC_SMALL_ALLOC_THRESHOLD)
+    {
+        ptr = gc_pool_alloc(contex, size);
+        if (ptr)
+            from_pool = 1;
+    }
+    if (!from_pool)
+        ptr = malloc(size);
+    
+    if (!ptr)
+        return (NULL);
+    
+    meta_data = gc_meta_create(ptr, size, contex->scope_depth, from_pool);
+    if (!meta_data)
+    {
+        if (!from_pool)  
+			free(ptr);
+        return (NULL);
+    }
+    gc_meta_add_global(contex, meta_data);
+    if (contex->current_scope)
+        gc_meta_add_scope(contex, meta_data);
+    gc_hash_add(contex, ptr, meta_data);
+    gc_update_and_collecte(contex, size);
+    return (ptr);
 }

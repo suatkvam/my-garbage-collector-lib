@@ -45,8 +45,10 @@ t_gc_context	*gc_create(void)
 	gc_memset(contex, 0, sizeof(t_gc_context));
 	gc_init_hash_table(contex);
 	gc_set_defaults(contex);
+	contex->pool_list = gc_pool_create(GC_POOL_SIZE);
 	if (!gc_scope_push(contex))
 	{
+		gc_pool_destroy_all(contex);
 		free(contex);
 		return (NULL);
 	}
