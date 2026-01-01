@@ -44,6 +44,7 @@ SRC = memory/gc_malloc_utils.c \
       string/gc_uitoa.c \
       string/gc_substr.c \
       string/gc_strtrim.c \
+      string/gc_split.c \
       utils/gc_bzero.c \
       utils/memory_utils.c \
       utils/gc_find_allocation.c \
