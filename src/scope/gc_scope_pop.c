@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/28 20:04:21 by akivam            #+#    #+#             */
-/*   Updated: 2025/11/28 20:04:21 by akivam           ###   ########.tr       */
+/*   Created: 2026/01/01 19:52:16 by akivam            #+#    #+#             */
+/*   Updated: 2026/01/01 19:52:16 by akivam           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,22 +35,22 @@ static void	gc_update_free_stats(t_gc_context *contex, size_t size)
 }
 
 /*free all allocations in current scope*/
-static void gc_free_scope_allocs(t_gc_context *contex, t_gc_scope *scope)
+static void	gc_free_scope_allocs(t_gc_context *contex, t_gc_scope *scope)
 {
-    t_gc_allocation *current;
-    t_gc_allocation *next;
+	t_gc_allocation	*current;
+	t_gc_allocation	*next;
 
-    current = scope->first;
-    while (current)
-    {
-        next = current->scope_next;
-        gc_remove_global(contex, current);
-        gc_update_free_stats(contex, current->size);
-        if (current->from_pool == 0)
-            free(current->ptr);
-        free(current); 
+	current = scope->first;
+	while (current)
+	{
+		next = current->scope_next;
+		gc_remove_global(contex, current);
+		gc_update_free_stats(contex, current->size);
+		if (current->from_pool == 0)
+			free(current->ptr);
+		free(current);
 		current = next;
-    }
+	}
 }
 
 /*

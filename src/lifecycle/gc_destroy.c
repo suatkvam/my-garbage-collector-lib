@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   gc_destroy.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2025/11/28 20:01:35 by akivam            #+#    #+#             */
 /*   Updated: 2025/11/28 20:01:35 by akivam           ###   ########.tr       */
 /*                                                                            */
@@ -14,20 +17,20 @@
 #include <stdlib.h>
 
 /*free all remaining allocations in global list*/
-static void gc_free_all_allocations(t_gc_context *contex)
+static void	gc_free_all_allocations(t_gc_context *contex)
 {
-    t_gc_allocation *current;
-    t_gc_allocation *next;
+	t_gc_allocation	*current;
+	t_gc_allocation	*next;
 
-    current = contex->all_allocations;
-    while (current)
-    {
-        next = current->next;        
-        if (current->from_pool == 0)
-            free(current->ptr);
-        free(current);
+	current = contex->all_allocations;
+	while (current)
+	{
+		next = current->next;
+		if (current->from_pool == 0)
+			free(current->ptr);
+		free(current);
 		current = next;
-    }
+	}
 }
 
 /*free all remaining scopes in stack*/

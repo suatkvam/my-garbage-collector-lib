@@ -15,6 +15,7 @@ RESET := \033[0m
 SRC_DIR = src
 OBJ_DIR = obj
 
+SRC = memory/gc_malloc_utils.c \
 SRC = memory/gc_malloc.c \
       memory/gc_calloc.c \
       memory/gc_realloc.c \

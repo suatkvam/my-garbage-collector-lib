@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/31 20:29:20 by akivam            #+#    #+#             */
-/*   Updated: 2025/12/31 20:29:20 by akivam           ###   ########.fr       */
+/*   Created: 2026/01/01 19:45:17 by akivam            #+#    #+#             */
+/*   Updated: 2026/01/01 19:45:17 by akivam           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,18 @@
 	create a new memory pool
 	returns: new pool or NULL on failure
 */
-t_gc_pool *gc_pool_create(size_t size)
+t_gc_pool	*gc_pool_create(size_t size)
 {
-	t_gc_pool *pool;
+	t_gc_pool	*pool;
 
 	pool = (t_gc_pool *)malloc(sizeof(t_gc_pool));
-	if(!pool)
+	if (!pool)
 		return (NULL);
 	pool->memory = malloc(size);
-	if(!pool->memory)
+	if (!pool->memory)
 	{
 		free(pool);
-		return(NULL);
+		return (NULL);
 	}
 	pool->size = size;
 	pool->used = 0;
@@ -42,16 +42,16 @@ t_gc_pool *gc_pool_create(size_t size)
 	Align to 8 bytes for better performance
 
 	*/
-static void *gc_pool_allocation_from(t_gc_pool *pool, size_t size)
+static void	*gc_pool_allocation_from(t_gc_pool *pool, size_t size)
 {
-	void *ptr;
-	size_t aligned_size;
+	void	*ptr;
+	size_t	aligned_size;
 
-	if(!pool)
+	if (!pool)
 		return (NULL);
 	aligned_size = (size + 7) & ~7;
-	if(pool->used + aligned_size > pool->size)
-		return NULL;
+	if (pool->used + aligned_size > pool->size)
+		return (NULL);
 	ptr = (char *)pool->memory + pool->used;
 	pool->used += aligned_size;
 	return (ptr);
@@ -61,26 +61,24 @@ static void *gc_pool_allocation_from(t_gc_pool *pool, size_t size)
  * allocate from pool chain
  * tries existing pools, creates new if needed
  */
-void *gc_pool_alloc(t_gc_context *contex, size_t size)
+void	*gc_pool_alloc(t_gc_context *contex, size_t size)
 {
-	t_gc_pool *pool;
-	t_gc_pool *new_pool;
-	void *ptr;
+	t_gc_pool	*pool;
+	t_gc_pool	*new_pool;
+	void		*ptr;
 
-	if(!contex || size == 0 || size >= GC_SMALL_ALLOC_THRESHOLD)
+	if (!contex || size == 0 || size >= GC_SMALL_ALLOC_THRESHOLD)
 		return (NULL);
-	// try existing pools
 	pool = contex->pool_list;
 	while (pool)
 	{
 		ptr = gc_pool_allocation_from(pool, size);
-		if(ptr)
-			return(ptr);
+		if (ptr)
+			return (ptr);
 		pool = pool->next;
 	}
-	//all pools full, create new
 	new_pool = gc_pool_create(GC_POOL_SIZE);
-	if(!new_pool)
+	if (!new_pool)
 		return (NULL);
 	new_pool->next = contex->pool_list;
 	contex->pool_list = new_pool;
@@ -92,12 +90,12 @@ void *gc_pool_alloc(t_gc_context *contex, size_t size)
  * destroy all pools
  * called from gc_destroy
  */
-void gc_pool_destroy_all(t_gc_context *contex)
+void	gc_pool_destroy_all(t_gc_context *contex)
 {
-	t_gc_pool *pool;
-	t_gc_pool *next;
+	t_gc_pool	*pool;
+	t_gc_pool	*next;
 
-	if(!contex)
+	if (!contex)
 		return ;
 	pool = contex->pool_list;
 	while (pool)

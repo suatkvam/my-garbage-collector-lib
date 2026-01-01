@@ -1,22 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   gc_hash.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/01 19:53:22 by akivam            #+#    #+#             */
+/*   Updated: 2026/01/01 19:53:22 by akivam           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "internal_collector.h"
 #include <stdlib.h>
 
 /*
-        FNV-1a hash function for pointer addresses
-        reurnns hash index in range [0, GC_HASH_SIZE]
+		FNV-1a hash function for pointer addresses
+		reurnns hash index in range [0, GC_HASH_SIZE]
 */
-
-size_t gc_hash_ptr(void *ptr)
+size_t	gc_hash_ptr(void *ptr)
 {
-
-	size_t address;
-	size_t hash;
-	int i;
+	size_t	address;
+	size_t	hash;
+	int		i;
 
 	address = (size_t)ptr;
 	hash = FNV_OFFSET_BASIS;
 	i = 0;
-	while (i < (int)sizeof(void *))
+	while (i < (int) sizeof(void *))
 	{
 		hash ^= (address & BYTE_MASK);
 		hash *= FNV_PRIME;
@@ -31,14 +41,16 @@ size_t gc_hash_ptr(void *ptr)
 	creates bucket and adds to font of chain (O(1))
 */
 
-void gc_hash_add(t_gc_context *contex, void *ptr, t_gc_allocation *allocation)
+void	gc_hash_add(t_gc_context *contex, void *ptr,
+		t_gc_allocation *allocation)
 {
-	t_gc_hash_bucket *bucket;
-	size_t index;
-	if(!contex || !ptr || ! allocation)
+	t_gc_hash_bucket	*bucket;
+	size_t				index;
+
+	if (!contex || !ptr || !allocation)
 		return ;
 	bucket = (t_gc_hash_bucket *)malloc(sizeof(t_gc_hash_bucket));
-	if(!bucket)
+	if (!bucket)
 		return ;
 	bucket->ptr = ptr;
 	bucket->allocation = allocation;
@@ -52,22 +64,22 @@ void gc_hash_add(t_gc_context *contex, void *ptr, t_gc_allocation *allocation)
 	returns allocation meradata or NULL if not found
 */
 
-t_gc_allocation *gc_hash_find(t_gc_context *contex, void *ptr)
+t_gc_allocation	*gc_hash_find(t_gc_context *contex, void *ptr)
 {
-	t_gc_hash_bucket *bucket;
-	size_t index;
+	t_gc_hash_bucket	*bucket;
+	size_t				index;
 
-	if(!contex || !ptr)
-		return NULL;
+	if (!contex || !ptr)
+		return (NULL);
 	index = gc_hash_ptr(ptr);
 	bucket = contex->hash_table[index];
 	while (bucket)
 	{
-		if(bucket->ptr == ptr)
+		if (bucket->ptr == ptr)
 			return (bucket->allocation);
 		bucket = bucket->next;
 	}
-	return NULL;
+	return (NULL);
 }
 
 /*
@@ -76,20 +88,20 @@ t_gc_allocation *gc_hash_find(t_gc_context *contex, void *ptr)
 */
 void	gc_hash_remove(t_gc_context *contex, void *ptr)
 {
-	t_gc_hash_bucket *bucket;
-	t_gc_hash_bucket *prev;
-	size_t index;
+	t_gc_hash_bucket	*bucket;
+	t_gc_hash_bucket	*prev;
+	size_t				index;
 
-	if(!contex || !ptr)
+	if (!contex || !ptr)
 		return ;
 	index = gc_hash_ptr(ptr);
 	bucket = contex->hash_table[index];
 	prev = NULL;
 	while (bucket)
 	{
-		if(bucket->ptr == ptr)
+		if (bucket->ptr == ptr)
 		{
-			if(prev)
+			if (prev)
 				prev->next = bucket->next;
 			else
 				contex->hash_table[index] = bucket->next;
@@ -107,13 +119,13 @@ void	gc_hash_remove(t_gc_context *contex, void *ptr)
 	called during gc_destroy()
 */
 
-void gc_hash_clear(t_gc_context *contex)
+void	gc_hash_clear(t_gc_context *contex)
 {
-	t_gc_hash_bucket *bucket;
-	t_gc_hash_bucket *next;
-	size_t i;
+	t_gc_hash_bucket	*bucket;
+	t_gc_hash_bucket	*next;
+	size_t				i;
 
-	if(!contex)
+	if (!contex)
 		return ;
 	i = 0;
 	while (i < GC_HASH_SIZE)

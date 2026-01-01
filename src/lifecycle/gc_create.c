@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   gc_create.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2025/11/28 20:01:35 by akivam            #+#    #+#             */
 /*   Updated: 2025/11/28 20:01:35 by akivam           ###   ########.tr       */
 /*                                                                            */
@@ -23,13 +26,15 @@ static void	gc_set_defaults(t_gc_context *contex)
 	contex->last_collect_count = 0;
 }
 
-static void gc_init_hash_table(t_gc_context *contex)
+static void	gc_init_hash_table(t_gc_context *contex)
 {
-	size_t i;
+	size_t	i;
+
 	i = -1;
-	while(++i < GC_HASH_SIZE)
+	while (++i < GC_HASH_SIZE)
 		contex->hash_table[i] = NULL;
 }
+
 /*
 **	create and initialize garbage collector context
 **	automatically creates root scope for non-scoped allocations

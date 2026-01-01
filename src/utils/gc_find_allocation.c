@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: akivam <akivam@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/28 20:06:26 by akivam            #+#    #+#             */
-/*   Updated: 2025/11/28 20:06:26 by akivam           ###   ########.tr       */
+/*   Created: 2026/01/01 19:53:04 by akivam            #+#    #+#             */
+/*   Updated: 2026/01/01 19:53:04 by akivam           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 */
 t_gc_allocation	*gc_find_allocation(t_gc_context *contex, void *ptr)
 {
-	if(!contex || !ptr)
+	if (!contex || !ptr)
 		return (NULL);
-	return(gc_hash_find(contex, ptr));	
+	return (gc_hash_find(contex, ptr));
 }

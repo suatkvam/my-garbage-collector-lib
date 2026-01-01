@@ -100,8 +100,17 @@ void			*gc_memmove(void *dest, const void *src, size_t n);
 void			*gc_memset(void *s, int c, size_t n);
 void			gc_bzero(void *s, size_t n);
 
-/* internal helper funcitons*/
+/*malloc utils*/
+t_gc_allocation	*gc_meta_create(void *ptr, size_t size, size_t level,
+					int from_pool);
+void			gc_meta_add_global(t_gc_context *contex,
+					t_gc_allocation *meta_data);
+void			gc_meta_add_scope(t_gc_context *contex,
+					t_gc_allocation *meta_data);
+void			gc_update_and_collecte(t_gc_context *contex,
+					size_t size);
 
+/* internal helper funcitons*/
 t_gc_allocation	*gc_alloc_crate(void *ptr, size_t size, size_t level);
 t_gc_allocation	*gc_find_allocation(t_gc_context *contex, void *ptr);
 void			gc_alloc_destroy(t_gc_allocation *allo);

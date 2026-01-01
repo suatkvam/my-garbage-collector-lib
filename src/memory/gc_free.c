@@ -51,7 +51,7 @@ void	gc_free(t_gc_context *context, void *ptr)
 	gc_remove_from_list(context, alloc);
 	gc_hash_remove(context, ptr);
 	gc_update_free_stats(context, alloc->size);
-	if(alloc->from_pool == 0)
+	if (alloc->from_pool == 0)
 		free(alloc->ptr);
 	free(alloc);
 }
