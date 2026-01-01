@@ -52,13 +52,35 @@ cc examples/debug_example.c garbage_collecter.a -o debug_example
 ./debug_example
 ```
 
+### 6. pool_test.c ✨ NEW
+Memory pool functionality: small vs large allocations, stress test.
+```bash
+cc examples/pool_test.c garbage_collecter.a -o pool_test
+./pool_test
+```
+
+### 7. fork_test.c ✨ NEW
+Fork safety: COW mechanism, parent-child data sharing.
+```bash
+cc examples/fork_test.c garbage_collecter.a -o fork_test
+./fork_test
+```
+
+### 8. benchmark_example.c
+Performance benchmarks: compare GC vs standard malloc, measure overhead.
+```bash
+cc examples/benchmark_example.c garbage_collecter.a -o benchmark_example
+./benchmark_example
+```
+
 ## Quick Test
 
 To run all examples in sequence:
 ```bash
-for example in basic scope modes string_utils debug; do
-    cc examples/${example}_example.c garbage_collecter.a -o ${example}_example
-    ./${example}_example
+for example in basic scope modes string_utils debug pool_test fork_test benchmark; do
+    cc examples/${example}_example.c garbage_collecter.a -o ${example}_example 2>/dev/null || \
+    cc examples/${example}.c garbage_collecter.a -o ${example} 2>/dev/null
+    ./${example}_example 2>/dev/null || ./${example}
     echo ""
 done
 ```
@@ -67,5 +89,5 @@ done
 
 To remove compiled files:
 ```bash
-rm -f *_example
+rm -f *_example pool_test fork_test benchmark
 ```

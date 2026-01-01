@@ -8,6 +8,9 @@ A high-performance garbage collector library for C programs, providing automatic
 
 ## 🎯 Features
 
+- **Memory Pool Optimization**: Efficient small allocation (<256 bytes) pooling for reduced fragmentation
+- **Hash Table Integration**: O(1) allocation lookup instead of O(n) linear search
+- **Fork-Safe Design**: Copy-on-Write (COW) mechanism for safe process forking
 - **Scope-Based Management**: Deterministic memory cleanup with automatic scope tracking
 - **Mark-and-Sweep Collection**: Comprehensive garbage collection for unreachable objects
 - **Multiple GC Modes**: Manual, Auto, and Hybrid collection modes
@@ -242,7 +245,9 @@ The `examples/` directory contains detailed demonstrations:
 3. **modes_example.c** - Different GC modes
 4. **string_utils_example.c** - String utilities
 5. **debug_example.c** - Statistics and debugging
-6. **benchmark_example.c** - Performance testing
+6. **pool_test.c** - Memory pool optimization tests
+7. **fork_test.c** - Fork safety and COW mechanism
+8. **benchmark_example.c** - Performance testing
 
 **Build and run:**
 ```bash
@@ -277,6 +282,29 @@ Metadata (Internal):
 Each allocation exists in TWO lists:
 1. **Global List** (doubly-linked): All allocations for mark-sweep
 2. **Scope List** (singly-linked): Scope-specific for deterministic cleanup
+
+### Memory Pool Optimization
+
+**Small Allocations (<256 bytes):**
+- Pre-allocated memory pools reduce system malloc calls
+- Faster allocation and reduced memory fragmentation
+- Pool blocks managed automatically by the GC
+
+**Large Allocations (≥256 bytes):**
+- Direct system malloc calls for efficiency
+- No pool overhead for large objects
+
+### Hash Table for O(1) Lookup
+
+- **Fast Allocation Search**: O(1) instead of O(n) linear search
+- **Efficient Tracking**: Hash-based allocation registry
+- **Optimized Operations**: Faster `gc_realloc` and pointer validation
+
+### Fork Safety (COW)
+
+- **Copy-on-Write**: Memory shared between parent/child until modification
+- **Safe Cleanup**: Each process manages its own GC context
+- **Pool Compatible**: Memory pools work correctly across fork boundaries
 
 ### Collection Strategy
 
@@ -344,14 +372,34 @@ config_t *load_config(t_gc_context *gc)
 void bulk_process(t_gc_context *gc)
 {
     gc_set_mode(gc, GC_MODE_HYBRID);
-    
+
     for (int i = 0; i < 1000; i++) {
         gc_scope_push(gc);
         process_item(gc, i);
         gc_scope_pop(gc);
-        
+
         // Auto-collect if threshold reached
     }
+}
+```
+
+**Pattern 4: Fork-Safe Usage**
+```c
+void parallel_processing(t_gc_context *gc)
+{
+    char *shared_data = gc_strdup(gc, "shared");
+
+    pid_t pid = fork();
+    if (pid == 0) {
+        // Child process
+        char *child_data = gc_strdup(gc, "child");  // COW triggered
+        process(child_data);
+        gc_destroy(gc);  // Clean up child's GC
+        exit(0);
+    }
+
+    // Parent continues
+    wait(NULL);
 }
 ```
 
@@ -437,6 +485,9 @@ gc->collect_interval = 10000;              // Every 10K allocs
 - [x] Statistics and debugging
 - [x] Performance benchmarking
 - [x] CI/CD with GitHub Actions
+- [x] Memory pool optimization for small allocations
+- [x] Hash table for O(1) allocation lookup
+- [x] Fork-safe design with COW mechanism
 - [ ] Thread-safe version
 - [ ] Generational collection
 - [ ] Compacting collector
