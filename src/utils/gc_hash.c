@@ -13,7 +13,7 @@ size_t gc_hash_ptr(void *ptr)
 	size_t hash;
 	int i;
 
-	address = PTR_TO_SIZE(ptr);
+	address = (size_t)ptr;
 	hash = FNV_OFFSET_BASIS;
 	i = 0;
 	while (i < (int)sizeof(void *))

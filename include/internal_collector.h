@@ -20,11 +20,8 @@
 # define BYTE_MASK 0xFF
 
 // memory pool configuration
-#define GC_POOL_SIZE (1024 * 1024) // 1MB per pool
+#define GC_POOL_SIZE 1048576 // 1MB per pool
 #define GC_SMALL_ALLOC_THRESHOLD 256 //small: <256 bytes
-
-// Pointer to size_t cast macro
-#define PTR_TO_SIZE(ptr) ((size_t)(ptr))
 
 #include "../garbage_collector.h"
 
