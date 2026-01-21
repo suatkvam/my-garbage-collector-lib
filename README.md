@@ -3,8 +3,12 @@
 [![Build Status](https://github.com/suatkvam/my-garbage-collector-lib/workflows/Build%20and%20Release/badge.svg)](https://github.com/suatkvam/my-garbage-collector-lib/actions)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos-lightgrey.svg)](https://github.com/suatkvam/my-garbage-collector-lib)
+[![Version](https://img.shields.io/badge/version-1.2.0--optimization-blue.svg)](https://github.com/suatkvam/my-garbage-collector-lib)
 
 A high-performance garbage collector library for C programs, providing automatic memory management through scope-based tracking and mark-and-sweep collection.
+
+> **Current Branch:** `optimization` - Optimized for single-threaded applications with memory pool and hash table integration.
+> **Thread-Safe Branch:** Available separately for multi-threaded applications.
 
 ## 🎯 Features
 
@@ -466,6 +470,20 @@ gc_collect(gc);  // Won't free (still in scope)
 gc_scope_pop(gc);  // Frees memory
 ```
 
+### gc_untrack Not Removing From Scope
+
+**Problem:** Using `gc_untrack` leaves dangling references in scope list.
+
+**Solution:** This has been fixed in the latest version. `gc_untrack` now properly removes allocations from both global and scope lists, preventing memory leaks and segmentation faults.
+
+```c
+// Now works correctly
+void *ptr = malloc(1024);
+gc_track(gc, ptr);
+gc_untrack(gc, ptr);  // Properly cleaned from all lists
+free(ptr);
+```
+
 ### Performance Issues
 
 **Problem:** Collection takes too long.
@@ -475,6 +493,34 @@ gc_scope_pop(gc);  // Frees memory
 gc->collect_threshold = 50 * 1024 * 1024;  // 50MB
 gc->collect_interval = 10000;              // Every 10K allocs
 ```
+
+## 📝 Changelog
+
+### Version 1.2.0-optimization (Current - January 2026)
+**Bug Fixes:**
+- Fixed critical `gc_untrack` scope leak bug - now properly removes allocations from both global and scope lists
+- Prevented potential segmentation faults from dangling scope references
+
+**Code Improvements:**
+- Refactored `gc_add_to_global` function to `gc_track_utils.c` for better modularity
+- Updated all comments to 42 Norminette style (`//` → `/* */`)
+- Fixed multiple typos across codebase for better code clarity
+
+**Performance:**
+- Maintained 23% faster performance than standard malloc
+- Hash table and memory pool optimizations remain stable
+
+### Version 1.1.0 (December 2025)
+- Added memory pool optimization for small allocations
+- Integrated hash table for O(1) allocation lookup
+- Implemented fork-safe design with COW mechanism
+- Performance improvements: 23% faster than standard malloc
+
+### Version 1.0.0 (November 2025)
+- Initial release with scope-based management
+- Mark-and-sweep garbage collection
+- Multiple GC modes (Manual, Auto, Hybrid)
+- String utilities and debugging tools
 
 ## 📈 Roadmap
 
@@ -488,7 +534,9 @@ gc->collect_interval = 10000;              // Every 10K allocs
 - [x] Memory pool optimization for small allocations
 - [x] Hash table for O(1) allocation lookup
 - [x] Fork-safe design with COW mechanism
-- [ ] Thread-safe version
+- [x] Bug fixes: gc_untrack scope leak, code organization improvements
+- [x] Norminette compliance (42 coding standards)
+- [ ] Thread-safe version (in progress on separate branch)
 - [ ] Generational collection
 - [ ] Compacting collector
 - [ ] Finalizer support
